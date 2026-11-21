@@ -133,3 +133,19 @@ Konten pihak ketiga mengikuti lisensinya masing-masing dan **tidak** termasuk kl
 | Kutipan kitab (`data/kitab.js`, `data/kitab.json`) | OpenITI | CC BY-NC-SA 4.0. Turunan berupa pustaka kutipan ini dibagikan dengan lisensi yang sama, non-komersial |
 | Koordinat kab/kota (`data/kota.js`, `tools/data/arrayaccess/`) | ArrayAccess/Indonesia-Postal-And-Area | MIT |
 | Perhitungan tabel Hijriah (saat build) | astronomy-engine | MIT |
+
+## Pasang di HP & laptop (tanpa Play Store)
+
+Tamu adalah PWA. Setelah situsnya online (mis. GitHub Pages: *Settings → Pages → Deploy from a branch → `main` / root* → `https://samsulchin.github.io/tamu/`), pengunjung bisa langsung memasangnya:
+
+- **Android & laptop (Chrome/Edge):** tombol **"Pasang aplikasi"** di Beranda/Pengaturan membuka dialog pasang bawaan browser.
+- **iPhone/iPad (Safari):** tombol yang sama menampilkan panduan *Bagikan → Tambahkan ke Layar Utama* (Apple tidak mengizinkan dialog pasang otomatis).
+- Setelah terpasang: ikon di layar utama, layar penuh, berjalan offline, dan data tetap hanya di perangkat.
+
+### APK Android (opsional)
+
+Untuk file APK yang bisa diunduh langsung atau diterbitkan di Play Store:
+1. Pastikan situs sudah online dengan HTTPS.
+2. Buka [pwabuilder.com](https://www.pwabuilder.com), masukkan alamat situs, pilih **Package for stores → Android**. Hasilnya APK/AAB beserta *signing key*. **Simpan key itu baik-baik**, karena dibutuhkan untuk setiap pembaruan.
+3. Bagikan APK lewat **GitHub Releases** dan tautkan dari web, atau unggah AAB ke **Google Play Console** (biaya pendaftaran developer sekali bayar).
+4. Agar APK tampil layar penuh tanpa bilah alamat, file `assetlinks.json` harus ada di `/.well-known/` pada **akar domain**. Untuk situs proyek GitHub Pages (`samsulchin.github.io/tamu`), itu berarti repo terpisah `samsulchin.github.io` atau memakai domain sendiri.

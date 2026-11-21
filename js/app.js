@@ -27,6 +27,8 @@ window.Tamu = window.Tamu || {};
     clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', moon: '<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',
     info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>', down: '<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>', up: '<path d="M12 20V9M7 14l5-5 5 5M5 4h14"/>',
     leaf: '<path d="M5 19C5 10 11 5 20 4c-1 9-6 15-15 15z"/><path d="M5 19 13 11"/>', baby: '<circle cx="12" cy="8" r="4"/><path d="M5 21c1-4 4-6 7-6s6 2 7 6"/>',
+    phone: '<rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/>',
+    share: '<path d="M12 3v12M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/>',
     pin: '<path d="M12 21s-7-6.5-7-12a7 7 0 0 1 14 0c0 5.5-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/>',
     scale: '<path d="M12 3v18M5 21h14M6 7h12M6 7l-3 7a3 3 0 0 0 6 0zM18 7l-3 7a3 3 0 0 0 6 0z"/>',
   };
@@ -164,6 +166,57 @@ window.Tamu = window.Tamu || {};
   }
 
   /* ---------- Halaman: Beranda ---------- */
+  /* ---------- Pasang sebagai aplikasi di HP / laptop (PWA) ---------- */
+  const inst = { prompt: null };
+  const isStandalone = () => (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+  const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const isAndroid = () => /android/i.test(navigator.userAgent);
+  const isMobile = () => isIOS() || isAndroid() || /mobile/i.test(navigator.userAgent);
+
+  /** Ajakan pasang di Beranda: hanya di HP (atau saat browser menawarkan pemasangan), belum terpasang, belum ditutup. */
+  function installBanner() {
+    const s = D().settings;
+    if (isStandalone() || s.installDismissed || !(inst.prompt || isMobile())) return '';
+    return '<section class="card install-banner">' + icon('phone') + '<div><b>Pasang Tamu di HP</b><small>Buka dari ikon di layar utama, layar penuh, dan tetap jalan tanpa internet. Gratis, tanpa Play Store.</small>' +
+      '<div class="row gap"><button class="btn btn-primary small" data-act="install">Pasang aplikasi</button><button class="btn btn-ghost small" data-act="install-later">Nanti</button></div></div></section>';
+  }
+  /** Kartu di Pengaturan: selalu ada, berisi status pemasangan. */
+  function installCard() {
+    if (isStandalone()) return '<section class="card install-card"><h3 class="card-t">' + icon('phone') + 'Aplikasi</h3><p class="ok-line">' + icon('check') + 'Tamu sudah terpasang di perangkat ini.</p></section>';
+    return '<section class="card install-card"><h3 class="card-t">' + icon('phone') + 'Pasang sebagai aplikasi</h3><p class="muted">Pasang Tamu di HP atau laptop agar bisa dibuka dari ikon seperti aplikasi biasa dan berjalan offline. Data tetap hanya di perangkat Anda.</p>' +
+      '<button class="btn btn-primary btn-big" data-act="install">' + icon('down') + 'Pasang aplikasi</button></section>';
+  }
+  async function doInstall() {
+    if (isStandalone()) return toast('Tamu sudah terpasang di perangkat ini.');
+    if (inst.prompt) {
+      const p = inst.prompt;
+      try {
+        await p.prompt(); // harus dipanggil langsung dari ketukan pengguna; menolak (reject) bila tidak bisa
+        inst.prompt = null;
+        const r = await p.userChoice;
+        if (r && r.outcome === 'accepted') toast('Memasang Tamu… Ikonnya akan muncul di layar utama.');
+        render();
+        return;
+      } catch (e) {
+        // dialog bawaan browser tidak bisa dibuka (sudah dipakai / ditolak): tampilkan panduan manual
+      }
+    }
+    sheetInstallHelp();
+  }
+  function sheetInstallHelp() {
+    const ios = isIOS(), android = isAndroid(), web = /^https?:/.test(location.protocol);
+    const step = (items) => '<ol class="install-steps">' + items.map((x) => '<li>' + x + '</li>').join('') + '</ol>';
+    const iosSteps = step(['Buka Tamu di <b>Safari</b>.', 'Tekan tombol <b>Bagikan</b> ' + icon('share') + ' di bagian bawah layar.', 'Gulir lalu pilih <b>Tambahkan ke Layar Utama</b>.', 'Tekan <b>Tambah</b>. Ikon Tamu muncul di layar utama.']);
+    const androidSteps = step(['Buka Tamu di <b>Chrome</b>.', 'Tekan menu <b>⋮</b> di kanan atas.', 'Pilih <b>Instal aplikasi</b> atau <b>Tambahkan ke layar utama</b>.', 'Tekan <b>Instal</b>.']);
+    const pcSteps = step(['Buka Tamu di <b>Chrome</b> atau <b>Edge</b>.', 'Klik ikon pasang di ujung kanan kolom alamat, atau menu <b>⋮ → Instal Tamu</b>.']);
+    openSheet('<h2>Cara memasang Tamu</h2>' +
+      (!web ? '<p class="err">Tamu sedang dibuka dari file di komputer. Untuk dipasang, buka dari alamat webnya (https://…).</p>' : '') +
+      (ios ? '<h3>iPhone / iPad</h3>' + iosSteps : android ? '<h3>Android</h3>' + androidSteps : '<h3>Laptop / PC</h3>' + pcSteps) +
+      '<details class="rules"><summary>Perangkat lain</summary>' + (ios ? '' : '<h4>iPhone / iPad</h4>' + iosSteps) + (android ? '' : '<h4>Android</h4>' + androidSteps) + (!ios && !android ? '' : '<h4>Laptop / PC</h4>' + pcSteps) + '</details>' +
+      '<p class="muted small">Setelah terpasang, Tamu tetap memakai data yang sama di perangkat ini dan bisa dibuka tanpa internet.</p>' +
+      '<div class="sheet-actions"><button class="btn btn-primary" data-act="close-sheet">Mengerti</button></div>', { noFocus: true });
+  }
+
   /* ---------- Panduan awal (checklist) & pengaturan siklus ---------- */
   function setupItems() {
     const d = D(), s = d.settings, su = s.setup || {};
@@ -221,6 +274,7 @@ window.Tamu = window.Tamu || {};
     const name = d.settings.name ? ', ' + esc(d.settings.name) : '';
     let h = '<div class="greet"><div class="greet-hi">Assalamu\'alaikum' + name + '</div><div class="greet-date">' + U.fmtDate(now, true) + (U.fmtHijri(now) ? ' · ' + U.fmtHijri(now) : '') + '</div></div>';
     h += setupCard();
+    h += installBanner();
 
     if (!cur) {
       // Belum ada catatan haid: semua masih nol, belum ada fase/prediksi yang dihitung
@@ -694,7 +748,7 @@ window.Tamu = window.Tamu || {};
   function viewSettings() {
     const s = D().settings;
     const opt = (v, cur, label) => '<option value="' + v + '"' + (String(v) === String(cur) ? ' selected' : '') + '>' + label + '</option>';
-    return '<div class="page-h"><h1>Pengaturan</h1></div>' + haidDataCard() +
+    return '<div class="page-h"><h1>Pengaturan</h1></div>' + haidDataCard() + installCard() +
       '<section class="card form"><h3 class="card-t">Profil & siklus</h3>' +
       '<label class="lbl" for="s-name">Nama panggilan <small>(opsional)</small></label><input id="s-name" data-change="name" value="' + esc(s.name) + '" maxlength="30" placeholder="mis. Aisyah">' +
       '<div class="two"><div><label class="lbl" for="s-cl">Panjang siklus (hari)</label><input id="s-cl" type="number" min="18" max="60" inputmode="numeric" data-change="cycleLen" value="' + s.cycleLen + '"></div>' +
@@ -1234,6 +1288,8 @@ window.Tamu = window.Tamu || {};
       const form = document.getElementById('in-form'); form.outerHTML = initFormHTML(m, form.dataset.ctx);
     },
     'init-open': () => sheetInit(),
+    install: () => doInstall(),
+    'install-later': () => { D().settings.installDismissed = true; save(); render(); toast('Bisa dipasang kapan saja dari Pengaturan → Pasang sebagai aplikasi.'); },
     'haid-reset': () => sheetReset(),
     'haid-reset-ok': () => doReset(),
     'in-save': () => {
@@ -1338,12 +1394,19 @@ window.Tamu = window.Tamu || {};
   }
 
   function boot() {
-    T.VERSION = '1.6.1';
+    T.VERSION = '1.7.0';
     Store.load();
     applyTheme();
     bind();
     render();
     hideSplash();
+    // Browser (Chrome/Edge/Android) menawarkan pemasangan: simpan, lalu tampilkan tombol "Pasang aplikasi" sendiri
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      inst.prompt = e;
+      if (!Store.locked && D().settings.onboarded && (state.view === 'home' || state.view === 'settings') && !document.querySelector('.sheet-root.open')) render();
+    });
+    window.addEventListener('appinstalled', () => { inst.prompt = null; toast('Tamu terpasang. Buka dari ikon di layar utama.'); if (!Store.locked) render(); });
     if (!AI_ENABLED && D() && D().settings.ai) { D().settings.ai = false; save(); }
     kmgSync(false);
     if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {

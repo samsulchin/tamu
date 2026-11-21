@@ -473,6 +473,16 @@ textarea { resize: vertical; }
 .toast.has-action { pointer-events: auto; display: flex; align-items: center; gap: 14px; }
 .toast-btn { background: none; border: 0; color: inherit; font: inherit; font-weight: 800; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; padding: 4px 2px; flex: none; }
 
+/* ---------- Pasang aplikasi ---------- */
+.install-banner { display: flex; gap: 12px; align-items: flex-start; border-color: color-mix(in srgb, var(--green) 40%, var(--line)); background: linear-gradient(180deg, var(--green-soft), var(--surface) 70%); }
+.install-banner > .ic { width: 28px; height: 28px; color: var(--green); flex: none; margin-top: 2px; }
+.install-banner > div { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.install-banner small { color: var(--muted); }
+.install-banner .row { margin-top: 6px; }
+.install-steps { padding-left: 1.3em; }
+.install-steps li { margin: 6px 0; }
+.install-steps .ic { width: 16px; height: 16px; vertical-align: -3px; }
+
 /* ---------- Footer hak cipta ---------- */
 .app-footer { text-align: center; color: var(--muted); font-size: .74rem; line-height: 1.5; padding: 18px 8px 8px; margin-top: 6px; border-top: 1px solid var(--line); }
 .app-footer p { margin: 0 0 4px; }
