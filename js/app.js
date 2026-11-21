@@ -445,7 +445,7 @@ window.Tamu = window.Tamu || {};
       if (key === todayKey) cls.push('is-today');
       if (key === state.sel) cls.push('is-sel');
       const h = U.hijri(new Date(dt.getFullYear(), dt.getMonth(), day, 12));
-      cells += '<button class="' + cls.join(' ') + '" data-act="sel-day" data-date="' + key + '" aria-label="' + U.fmtDate(dt, true) + '"><span class="n">' + day + '</span>' + (h ? '<span class="hj">' + h.d + '</span>' : '') + (mk.log ? '<i class="logdot"></i>' : '') + '</button>';
+      cells += '<button class="' + cls.join(' ') + '" data-act="sel-day" data-date="' + key + '" aria-label="' + U.fmtDate(dt, true) + '"><span class="n">' + day + '</span>' + (h ? '<span class="hj" lang="ar">' + U.arabNum(h.d) + '</span>' : '') + (mk.log ? '<i class="logdot"></i>' : '') + '</button>';
     }
     const h1 = U.hijri(new Date(first.getFullYear(), first.getMonth(), 1, 12)), h2 = U.hijri(new Date(first.getFullYear(), first.getMonth(), days, 12));
     const hijriLbl = h1 && h2 ? (h1.m === h2.m ? U.HIJRI[h1.m - 1] + ' ' + h1.y : U.HIJRI[h1.m - 1] + ' – ' + U.HIJRI[h2.m - 1] + ' ' + h2.y) + ' H' : '';
@@ -1392,7 +1392,7 @@ window.Tamu = window.Tamu || {};
   }
 
   function boot() {
-    T.VERSION = '1.8.1';
+    T.VERSION = '1.8.2';
     Store.load();
     applyTheme();
     bind();

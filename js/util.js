@@ -94,6 +94,8 @@ window.Tamu = window.Tamu || {};
       }
       return U.hijriUmmAlQura(d);
     },
+    /** Angka Arab (Arab-Indik): 11 → ١١. Dipakai untuk angka Hijriah kecil di sel kalender. */
+    arabNum(n) { return String(n).replace(/[0-9]/g, (d) => '٠١٢٣٤٥٦٧٨٩'[d]); },
     hijriUmmAlQura(d) {
       const f = getHijriFmt();
       if (!f) return null;
