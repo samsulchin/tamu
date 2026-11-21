@@ -1,0 +1,14 @@
+{
+  "name": "tamu",
+  "private": true,
+  "description": "Tamu - teman siklus muslimah. Aplikasi statis tanpa server; dev-dependency hanya untuk skrip build.",
+  "scripts": {
+    "dev": "node tools/serve.js",
+    "build:kitab": "node tools/build-kitab.js",
+    "build:hijri": "node tools/build-hijri.js",
+    "build:kota": "node tools/build-kota.js"
+  },
+  "devDependencies": {
+    "astronomy-engine": "^2.1.19"
+  }
+}

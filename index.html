@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Tamu · Teman Siklus Muslimah</title>
+  <meta name="description" content="Pencatat siklus haid untuk muslimah: privat, gratis, offline, dengan panduan fikih haid mazhab Syafi'i.">
+  <meta name="theme-color" content="#FFF8FA" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#171013" media="(prefers-color-scheme: dark)">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://api.myquran.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Tamu">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="splash" class="splash" aria-hidden="true">
+    <img class="splash-logo" src="assets/logo.svg" alt="" width="120" height="120">
+    <div class="splash-name">Tamu</div>
+    <div class="splash-tag">Teman siklus muslimah</div>
+  </div>
+  <div class="app">
+    <header class="top">
+      <a class="brand" href="#home" aria-label="Tamu, beranda"><img src="assets/logo.svg" alt="" width="30" height="30"><span>Tamu</span></a>
+      <a id="top-settings" class="icon-btn" href="#settings" aria-label="Pengaturan"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1 7 17M17 7l2.1-2.1"/></svg></a>
+    </header>
+    <main id="main" tabindex="-1">
+      <noscript><p style="padding:24px">Tamu membutuhkan JavaScript. Semua proses berjalan di perangkat Anda, dan tidak ada data yang dikirim ke mana pun.</p></noscript>
+    </main>
+    <nav id="tabbar" class="tabbar" aria-label="Navigasi utama"></nav>
+  </div>
+  <div id="sheet-root" class="sheet-root"></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="data/hijri.js"></script>
+  <script src="js/util.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/prayer.js"></script>
+  <script src="js/kemenag.js"></script>
+  <script src="js/cycle.js"></script>
+  <script src="js/fiqh.js"></script>
+  <script src="js/content.js"></script>
+  <script src="js/qa.js"></script>
+  <script src="js/kitab.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

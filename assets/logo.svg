@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Logo Tamu">
+  <defs>
+    <linearGradient id="tamu-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFF8FA"/>
+      <stop offset="1" stop-color="#FDEBF1"/>
+    </linearGradient>
+    <linearGradient id="tamu-pink" x1="0.15" y1="0.1" x2="0.85" y2="0.95">
+      <stop offset="0" stop-color="#F48FB1"/>
+      <stop offset="0.55" stop-color="#E8558C"/>
+      <stop offset="1" stop-color="#C93A72"/>
+    </linearGradient>
+    <linearGradient id="tamu-green" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#1F8A68"/>
+      <stop offset="1" stop-color="#5CC79A"/>
+    </linearGradient>
+    <mask id="tamu-cut">
+      <rect width="512" height="512" fill="#fff"/>
+      <circle cx="322" cy="206" r="126" fill="#000"/>
+    </mask>
+  </defs>
+
+  <rect width="512" height="512" rx="116" fill="url(#tamu-bg)"/>
+
+  <!-- Bulan sabit: siklus bulanan -->
+  <circle cx="250" cy="272" r="152" fill="url(#tamu-pink)" mask="url(#tamu-cut)"/>
+
+  <!-- Daun: kesehatan & pertumbuhan -->
+  <path d="M262 338 C258 252 318 186 414 166 C410 262 352 326 262 338 Z" fill="url(#tamu-green)"/>
+  <path d="M276 324 Q336 266 398 184" fill="none" stroke="#FFFFFF" stroke-opacity="0.55" stroke-width="7" stroke-linecap="round"/>
+
+  <!-- Bintang kecil -->
+  <circle cx="176" cy="150" r="13" fill="#5CC79A"/>
+</svg>
