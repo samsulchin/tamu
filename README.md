@@ -133,6 +133,7 @@ Konten pihak ketiga mengikuti lisensinya masing-masing dan **tidak** termasuk kl
 | Kutipan kitab (`data/kitab.js`, `data/kitab.json`) | OpenITI | CC BY-NC-SA 4.0. Turunan berupa pustaka kutipan ini dibagikan dengan lisensi yang sama, non-komersial |
 | Koordinat kab/kota (`data/kota.js`, `tools/data/arrayaccess/`) | ArrayAccess/Indonesia-Postal-And-Area | MIT |
 | Perhitungan tabel Hijriah (saat build) | astronomy-engine | MIT |
+| Font antarmuka (`assets/fonts/`) | Plus Jakarta Sans (Tokotype) | SIL Open Font License 1.1 (`assets/fonts/OFL.txt`) |
 
 ## Pasang di HP & laptop (tanpa Play Store)
 

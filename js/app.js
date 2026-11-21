@@ -121,19 +121,19 @@ window.Tamu = window.Tamu || {};
     const gap = 0.006;
     const arcs = segs.map((s) => {
       const len = Math.max(0, (s.b - s.a - gap) * C);
-      return '<circle cx="' + cx + '" cy="' + cx + '" r="' + r + '" fill="none" stroke="' + s.c + '" stroke-width="18" stroke-linecap="butt" stroke-dasharray="' + len.toFixed(2) + ' ' + C.toFixed(2) + '" stroke-dashoffset="' + (-s.a * C).toFixed(2) + '" transform="rotate(-90 ' + cx + ' ' + cx + ')"/>';
+      return '<circle cx="' + cx + '" cy="' + cx + '" r="' + r + '" fill="none" stroke="' + s.c + '" stroke-width="14" stroke-linecap="butt" stroke-dasharray="' + len.toFixed(2) + ' ' + C.toFixed(2) + '" stroke-dashoffset="' + (-s.a * C).toFixed(2) + '" transform="rotate(-90 ' + cx + ' ' + cx + ')"/>';
     }).join('');
     const ang = 2 * Math.PI * marker - Math.PI / 2;
     const mx = cx + r * Math.cos(ang), my = cx + r * Math.sin(ang);
     return '<div class="ring" role="img" aria-label="' + esc(small + ', ' + big + ', ' + sub) + '"><svg viewBox="0 0 ' + size + ' ' + size + '">' +
-      '<circle cx="' + cx + '" cy="' + cx + '" r="' + r + '" fill="none" stroke="var(--track)" stroke-width="18"/>' + arcs +
+      '<circle cx="' + cx + '" cy="' + cx + '" r="' + r + '" fill="none" stroke="var(--track)" stroke-width="14"/>' + arcs +
       '<circle cx="' + mx.toFixed(1) + '" cy="' + my.toFixed(1) + '" r="13" fill="var(--surface)" stroke="var(--text)" stroke-width="3"/></svg>' +
       '<div class="ring-c"><div class="ring-small">' + esc(small) + '</div><div class="ring-big">' + esc(big) + '</div><div class="ring-sub">' + esc(sub) + '</div></div></div>';
   }
 
   /** Lingkaran kosong untuk keadaan belum ada data. */
   function ringEmpty() {
-    return '<div class="ring" role="img" aria-label="Belum dihitung, hari ke-0"><svg viewBox="0 0 232 232"><circle cx="116" cy="116" r="96" fill="none" stroke="var(--track)" stroke-width="18"/></svg>' +
+    return '<div class="ring" role="img" aria-label="Belum dihitung, hari ke-0"><svg viewBox="0 0 232 232"><circle cx="116" cy="116" r="96" fill="none" stroke="var(--track)" stroke-width="14"/></svg>' +
       '<div class="ring-c"><div class="ring-small muted-small">Belum dihitung</div><div class="ring-big">Hari ke-0</div><div class="ring-sub">isi awal haid dulu</div></div></div>';
   }
 
@@ -177,13 +177,13 @@ window.Tamu = window.Tamu || {};
   function installBanner() {
     const s = D().settings;
     if (isStandalone() || s.installDismissed || !(inst.prompt || isMobile())) return '';
-    return '<section class="card install-banner">' + icon('phone') + '<div><b>Pasang Tamu di HP</b><small>Buka dari ikon di layar utama, layar penuh, dan tetap jalan tanpa internet. Gratis, tanpa Play Store.</small>' +
+    return '<section class="card install-banner">' + icon('phone') + '<div><b>Pasang Tamu di HP</b><small>Buka dari layar utama, tetap jalan tanpa internet.</small>' +
       '<div class="row gap"><button class="btn btn-primary small" data-act="install">Pasang aplikasi</button><button class="btn btn-ghost small" data-act="install-later">Nanti</button></div></div></section>';
   }
   /** Kartu di Pengaturan: selalu ada, berisi status pemasangan. */
   function installCard() {
     if (isStandalone()) return '<section class="card install-card"><h3 class="card-t">' + icon('phone') + 'Aplikasi</h3><p class="ok-line">' + icon('check') + 'Tamu sudah terpasang di perangkat ini.</p></section>';
-    return '<section class="card install-card"><h3 class="card-t">' + icon('phone') + 'Pasang sebagai aplikasi</h3><p class="muted">Pasang Tamu di HP atau laptop agar bisa dibuka dari ikon seperti aplikasi biasa dan berjalan offline. Data tetap hanya di perangkat Anda.</p>' +
+    return '<section class="card install-card"><h3 class="card-t">' + icon('phone') + 'Pasang sebagai aplikasi</h3><p class="muted">Buka Tamu dari ikon seperti aplikasi biasa, juga saat offline.</p>' +
       '<button class="btn btn-primary btn-big" data-act="install">' + icon('down') + 'Pasang aplikasi</button></section>';
   }
   async function doInstall() {
@@ -221,11 +221,11 @@ window.Tamu = window.Tamu || {};
   function setupItems() {
     const d = D(), s = d.settings, su = s.setup || {};
     return [
-      { key: 'cycle', done: !!su.cycle, title: 'Atur siklus & lama haid', desc: 'Panjang siklus dan lama haid Anda biasanya. Prediksi kalender mengikuti angka ini, lalu menyesuaikan otomatis dari catatan.', act: 'cycle-setup', btn: 'Atur' },
-      { key: 'haid', done: d.periods.length > 0, title: 'Isi data awal haid', desc: 'Kapan haid terakhir dimulai dan selesai, plus riwayat sebelumnya bila ingat. Ini titik awal prediksi.', act: 'init-open', btn: 'Isi' },
-      { key: 'lokasi', done: !!su.lokasi, title: 'Tentukan lokasi jadwal shalat', desc: 'Pakai GPS atau pilih kab/kota agar analisis shalat saat haid mulai/berhenti akurat.', act: 'go-fiqh', btn: 'Atur' },
-      { key: 'hijri', done: !!su.hijri, title: 'Pilih kalender Hijriah', desc: 'Kemenag atau Muhammadiyah. Dipakai untuk tanggal Hijriah dan hutang puasa Ramadhan.', act: 'hijri-setup', btn: 'Pilih' },
-      { key: 'pin', done: Store.hasPin(), title: 'Kunci dengan PIN (opsional)', desc: 'Agar catatan tidak bisa dibuka orang lain dan tersimpan terenkripsi.', act: 'pin-set', btn: 'Aktifkan', optional: true },
+      { key: 'cycle', done: !!su.cycle, title: 'Atur siklus & lama haid', desc: 'Berapa hari siklus dan haidmu biasanya.', act: 'cycle-setup', btn: 'Atur' },
+      { key: 'haid', done: d.periods.length > 0, title: 'Isi data awal haid', desc: 'Kapan haid terakhirmu dimulai dan selesai.', act: 'init-open', btn: 'Isi' },
+      { key: 'lokasi', done: !!su.lokasi, title: 'Tentukan lokasi jadwal shalat', desc: 'Untuk jadwal shalat. Bisa pakai GPS.', act: 'go-fiqh', btn: 'Atur' },
+      { key: 'hijri', done: !!su.hijri, title: 'Pilih kalender Hijriah', desc: 'Kemenag atau Muhammadiyah.', act: 'hijri-setup', btn: 'Pilih' },
+      { key: 'pin', done: Store.hasPin(), title: 'Kunci dengan PIN (opsional)', desc: 'Biar catatanmu tidak dibuka orang lain.', act: 'pin-set', btn: 'Aktifkan', optional: true },
     ];
   }
   function setupPending() {
@@ -237,30 +237,30 @@ window.Tamu = window.Tamu || {};
     if (!setupPending()) return '';
     const items = setupItems();
     const done = items.filter((x) => x.done).length;
-    return '<section class="card setup"><div class="setup-h">' + icon('info') + '<div><b>Yuk, atur dulu agar tracking haidmu akurat</b><small>' + done + ' dari ' + items.length + ' langkah selesai</small></div></div>' +
+    return '<section class="card setup"><div class="setup-h">' + icon('info') + '<div><b>Yuk, siapkan dulu</b><small>' + done + ' dari ' + items.length + ' langkah selesai</small></div></div>' +
       '<div class="setup-bar"><i style="width:' + Math.round((done / items.length) * 100) + '%"></i></div><ol class="setup-list">' +
       items.map((x) => '<li class="' + (x.done ? 'done' : '') + '"><span class="setup-ic">' + icon(x.done ? 'check' : 'right') + '</span><div><b>' + esc(x.title) + '</b><small>' + esc(x.desc) + '</small></div>' +
         (x.done ? '' : '<button class="btn btn-soft small" data-act="' + x.act + '">' + esc(x.btn) + '</button>') + '</li>').join('') +
-      '</ol><button class="link setup-skip" data-act="setup-dismiss">Sembunyikan panduan ini</button></section>';
+      '</ol><button class="link setup-skip" data-act="setup-dismiss">Nanti saja</button></section>';
   }
 
   function sheetCycle() {
     const d = D(), s = d.settings, st = Cycle.stats(d);
     const learned = st.dataCycle || st.dataPeriod
-      ? '<div class="result tone-green"><b>' + icon('learn') + 'Dari catatan Anda</b><p>' + (st.dataCycle ? 'Rata-rata siklus <b>' + st.dataCycle + ' hari</b> (' + st.count + ' siklus' + (st.count >= 2 ? ', ' + st.minCycle + '–' + st.maxCycle + ' hari' : '') + ')' : 'Siklus belum bisa dihitung (perlu minimal 2 kali haid tercatat)') + (st.dataPeriod ? ' · lama haid <b>' + st.dataPeriod + ' hari</b>' : '') + '.</p></div>'
-      : '<p class="muted small">Belum ada catatan haid lengkap. Prediksi memakai angka di atas sampai catatan Anda cukup.</p>';
-    openSheet('<h2>Atur siklus haid</h2><p class="muted">Setiap orang berbeda. Isi sesuai kebiasaan Anda; kalender, masa subur, dan perkiraan haid akan mengikuti.</p>' +
+      ? '<div class="result tone-green"><b>' + icon('learn') + 'Dari catatanmu</b><p>' + (st.dataCycle ? 'Rata-rata siklus <b>' + st.dataCycle + ' hari</b> (' + st.count + ' siklus' + (st.count >= 2 ? ', ' + st.minCycle + '–' + st.maxCycle + ' hari' : '') + ')' : 'Siklus belum bisa dihitung (perlu minimal 2 kali haid tercatat)') + (st.dataPeriod ? ' · lama haid <b>' + st.dataPeriod + ' hari</b>' : '') + '.</p></div>'
+      : '<p class="muted small">Belum ada catatan haid lengkap. Prediksi memakai angka di atas sampai catatanmu cukup.</p>';
+    openSheet('<h2>Atur siklus haid</h2><p class="muted">Isi sesuai kebiasaanmu. Kalender dan perkiraan haid ikut menyesuaikan.</p>' +
       '<label class="lbl" for="cy-len">Panjang siklus <small>(hari pertama haid sampai haid berikutnya)</small></label><div class="stepper"><button class="btn btn-soft icon-only" data-act="step" data-t="cy-len" data-d="-1" aria-label="Kurangi">' + icon('minus') + '</button><input id="cy-len" type="number" min="18" max="60" inputmode="numeric" value="' + s.cycleLen + '"><button class="btn btn-soft icon-only" data-act="step" data-t="cy-len" data-d="1" aria-label="Tambah">' + icon('plus') + '</button></div>' +
       '<label class="lbl" for="cy-per">Lama haid <small>(hari)</small></label><div class="stepper"><button class="btn btn-soft icon-only" data-act="step" data-t="cy-per" data-d="-1" aria-label="Kurangi">' + icon('minus') + '</button><input id="cy-per" type="number" min="1" max="15" inputmode="numeric" value="' + s.periodLen + '"><button class="btn btn-soft icon-only" data-act="step" data-t="cy-per" data-d="1" aria-label="Tambah">' + icon('plus') + '</button></div>' +
       learned +
       '<label class="lbl">Cara prediksi</label>' + chips('pred-mode', [['auto', 'Otomatis (disarankan)'], ['manual', 'Pakai angka saya']], s.predMode || 'auto') +
-      '<p class="muted small"><b>Otomatis:</b> mulai dari angka di atas, lalu belajar dari catatan haid Anda (siklus terbaru paling berpengaruh). <b>Pakai angka saya:</b> prediksi selalu memakai angka di atas, cocok bila Anda sedang memakai kontrasepsi hormonal atau catatan lama tidak lengkap.</p>' +
-      '<p class="muted small">Tidak tahu? Siklus umumnya 21–35 hari dan haid 3–7 hari. Biarkan 28 dan 7, nanti menyesuaikan sendiri.</p>' +
+      '<p class="muted small"><b>Otomatis:</b> mulai dari angka di atas, lalu belajar dari catatan haidmu (siklus terbaru paling berpengaruh). <b>Pakai angka saya:</b> prediksi selalu memakai angka di atas, cocok bila kamu sedang memakai kontrasepsi hormonal atau catatan lama tidak lengkap.</p>' +
+      '<p class="muted small">Belum tahu? Biarkan 28 dan 7, nanti menyesuaikan sendiri.</p>' +
       '<div class="sheet-actions"><button class="btn btn-ghost" data-act="close-sheet">Batal</button><button class="btn btn-primary" data-act="cycle-save">' + icon('check') + 'Simpan</button></div>', { noFocus: true });
   }
   function sheetHijri() {
     const s = D().settings;
-    openSheet('<h2>Kalender Hijriah</h2><p class="muted">Pilih yang Anda ikuti. Dipakai untuk tanggal Hijriah di aplikasi dan untuk menghitung hutang puasa Ramadhan.</p>' +
+    openSheet('<h2>Kalender Hijriah</h2><p class="muted">Pilih yang kamu ikuti. Dipakai untuk tanggal Hijriah di aplikasi dan untuk menghitung hutang puasa Ramadhan.</p>' +
       chips('hcal', Object.keys(U.HIJRI_CALS).map((k) => [k, U.HIJRI_CALS[k]]), s.hijriCal || 'kemenag') +
       '<p class="muted small">Kemenag: prediksi hisab kriteria MABIMS (awal Ramadhan/Syawal/Dzulhijjah resmi ditetapkan sidang isbat). Muhammadiyah: Kalender Hijriah Global Tunggal. Koreksi ±hari tersedia di Pengaturan.</p>' +
       '<div class="sheet-actions"><button class="btn btn-ghost" data-act="close-sheet">Batal</button><button class="btn btn-primary" data-act="hijri-save">' + icon('check') + 'Simpan</button></div>', { noFocus: true });
@@ -279,12 +279,12 @@ window.Tamu = window.Tamu || {};
     if (!cur) {
       // Belum ada catatan haid: semua masih nol, belum ada fase/prediksi yang dihitung
       h += '<section class="card hero empty-hero">' + ringEmpty() +
-        '<p class="muted center">Tamu belum menghitung apa pun. Isi <b>tanggal mulai haid</b> (dan jamnya bila ingat) serta kebiasaan siklus Anda. Setelah itu fase, kalender, perkiraan haid, dan masa subur langsung dihitung.</p>' +
+        '<p class="muted center">Belum ada catatan. Isi kapan haid terakhirmu dimulai, nanti Tamu yang menghitung sisanya.</p>' +
         '<button class="btn btn-primary btn-big" data-act="init-open">' + icon('edit') + 'Isi tanggal & jam haid terakhir</button>' +
         '<button class="btn btn-ghost hero-edit" data-act="start-period">' + icon('drop') + 'Haid mulai hari ini</button></section>' +
         '<section class="card"><h3 class="card-t">Perkiraan</h3><div class="pred empty-pred">' +
         ['Haid berikutnya', 'Masa subur', 'Perkiraan ovulasi', 'Rata-rata siklus', 'Rata-rata haid', 'Keteraturan'].map((k) => '<div><span class="k">' + k + '</span><span class="v">–</span></div>').join('') +
-        '</div><p class="muted small">Belum ada data. Angka muncul setelah awal haid diisi.</p></section>';
+        '</div><p class="muted small">Muncul setelah awal haid diisi.</p></section>';
       return h + statusCard(st);
     }
     h += '<section class="card hero">' + ring(cur);
@@ -354,7 +354,7 @@ window.Tamu = window.Tamu || {};
     let def = new Date();
     if (dateYMD && dateYMD !== U.ymd(def)) { def = U.parseYMD(dateYMD); def.setHours(7, 0); }
     openSheet('<h2>' + (kind === 'nifas' ? 'Mulai nifas' : 'Darah haid keluar') + '</h2>' +
-      '<p class="muted">' + (kind === 'nifas' ? 'Masukkan waktu darah keluar setelah bayi lahir (rahim kosong).' : 'Masukkan tanggal dan jam pertama kali Anda melihat darah. Jam penting untuk menentukan shalat yang perlu diqadha.') + '</p>' +
+      '<p class="muted">' + (kind === 'nifas' ? 'Masukkan waktu darah keluar setelah bayi lahir (rahim kosong).' : 'Masukkan tanggal dan jam pertama kali kamu melihat darah. Jam penting untuk menentukan shalat yang perlu diqadha.') + '</p>' +
       '<label class="lbl" for="st-at">Waktu mulai</label><input type="datetime-local" id="st-at" value="' + U.toLocalInput(def) + '" max="' + U.toLocalInput(new Date(Date.now() + 6e4)) + '">' +
       '<label class="lbl">Jenis</label>' + chips('kind', [['haid', 'Haid'], ['nifas', 'Nifas (setelah melahirkan)']], kind) +
       '<div class="sheet-actions"><button class="btn btn-ghost" data-act="close-sheet">Batal</button><button class="btn btn-primary" data-act="start-save">' + icon('check') + 'Simpan</button></div>', { noFocus: true });
@@ -365,7 +365,7 @@ window.Tamu = window.Tamu || {};
     let def = new Date();
     if (dateYMD && dateYMD !== U.ymd(def)) { def = U.parseYMD(dateYMD); def.setHours(new Date().getHours(), new Date().getMinutes()); }
     if (def < new Date(og.start)) def = new Date(+new Date(og.start) + 6e4);
-    openSheet('<h2>Darah sudah berhenti</h2><p class="muted">Mulai ' + U.fmtDateTime(og.start) + '. Masukkan waktu Anda yakin sudah suci (keluar cairan bening atau kapas bersih).</p>' +
+    openSheet('<h2>Darah sudah berhenti</h2><p class="muted">Mulai ' + U.fmtDateTime(og.start) + '. Masukkan waktumu yakin sudah suci (keluar cairan bening atau kapas bersih).</p>' +
       '<label class="lbl" for="en-at">Waktu berhenti</label><input type="datetime-local" id="en-at" value="' + U.toLocalInput(def) + '" min="' + U.toLocalInput(og.start) + '" max="' + U.toLocalInput(new Date(Date.now() + 6e4)) + '">' +
       '<div class="sheet-actions"><button class="btn btn-ghost" data-act="close-sheet">Batal</button><button class="btn btn-primary" data-act="end-save">' + icon('check') + 'Simpan</button></div>', { noFocus: true });
   }
@@ -408,7 +408,7 @@ window.Tamu = window.Tamu || {};
     const cur = Cycle.current(d, now);
     if (mk.haidPred) {
       const og = ongoing();
-      return '<div class="day-status ds-haid">' + icon('drop') + '<div><b>Perkiraan haid hari ke-' + mk.haidPred + '</b><small>Haid sedang berlangsung sejak ' + (og ? U.fmtDateTime(og.start) : '') + '. Diperkirakan selesai sekitar ' + U.fmtDate(U.addDays(U.sod(og ? og.start : now), Cycle.stats(d).avgPeriod - 1)) + ', sesuai kebiasaan lama haid ' + Cycle.stats(d).avgPeriod + ' hari.</small><small>Bila darah berhenti lebih cepat atau lebih lama, warnanya menyesuaikan setelah Anda menandai selesai.</small></div></div>';
+      return '<div class="day-status ds-haid">' + icon('drop') + '<div><b>Perkiraan haid hari ke-' + mk.haidPred + '</b><small>Haid sedang berlangsung sejak ' + (og ? U.fmtDateTime(og.start) : '') + '. Diperkirakan selesai sekitar ' + U.fmtDate(U.addDays(U.sod(og ? og.start : now), Cycle.stats(d).avgPeriod - 1)) + ', sesuai kebiasaan lama haid ' + Cycle.stats(d).avgPeriod + ' hari.</small><small>Bila darah berhenti lebih cepat atau lebih lama, warnanya menyesuaikan setelah kamu menandai selesai.</small></div></div>';
     }
     if (mk.late && cur) {
       return '<div class="day-status ds-late">' + icon('info') + '<div><b>Haid terlambat ' + mk.late + ' hari</b><small>Perkiraan semula ' + U.fmtDate(cur.nextStart) + '. Selisih beberapa hari masih wajar. <a href="#a/telat">Penyebab haid terlambat</a></small></div></div>';
@@ -417,7 +417,7 @@ window.Tamu = window.Tamu || {};
       return '<div class="day-status ds-pred">' + icon('drop') + '<div><b>Perkiraan haid</b><small>' + (mk.pred === 'late' ? 'Perkiraan digeser karena haid belum datang. Bisa datang kapan saja mulai besok.' : 'Berdasarkan rata-rata siklus ' + cur.st.avgCycle + ' hari dan lama haid ' + cur.st.avgPeriod + ' hari.') + '</small></div></div>';
     }
     if (mk.ovu) return '<div class="day-status ds-fertile">' + icon('leaf') + '<div><b>Perkiraan ovulasi</b><small>Puncak masa subur (perkiraan, bukan alat kontrasepsi).</small></div></div>';
-    if (mk.fertile) return '<div class="day-status ds-fertile">' + icon('leaf') + '<div><b>Masa subur</b><small>Perkiraan dari panjang siklus Anda.</small></div></div>';
+    if (mk.fertile) return '<div class="day-status ds-fertile">' + icon('leaf') + '<div><b>Masa subur</b><small>Perkiraan dari panjang siklusmu.</small></div></div>';
     return '';
   }
 
@@ -496,7 +496,7 @@ window.Tamu = window.Tamu || {};
       '<p class="small">' + q.paid + ' dari ' + q.owed + ' hari sudah diqadha' + (Object.keys(q.byYear).length ? ' · ' + Object.keys(q.byYear).map((y) => 'Ramadhan ' + y + ' H: ' + q.byYear[y].length + ' hari').join(', ') : '') + (q.adjust ? ' · koreksi manual ' + (q.adjust > 0 ? '+' : '') + q.adjust : '') + '</p>' +
       '<div class="row gap wrap"><button class="btn btn-green" data-act="qadha-pay"' + (q.remaining ? '' : ' disabled') + '>' + icon('check') + 'Saya qadha 1 hari</button><button class="btn btn-ghost" data-act="qadha-adjust">Koreksi jumlah</button></div>' +
       (d.qadha.paid.length ? '<details class="rules"><summary>Riwayat qadha (' + d.qadha.paid.length + ')</summary><ul class="paid">' + d.qadha.paid.slice().reverse().map((x, i) => '<li>' + U.fmtDate(U.parseYMD(x), true) + (i === 0 ? ' <button class="link" data-act="qadha-undo">batalkan</button>' : '') + '</li>').join('') + '</ul></details>' : '') +
-      '<p class="muted small">Bulan Ramadhan ditentukan dengan kalender ' + esc(U.HIJRI_CALS[d.settings.hijriCal] || U.HIJRI_CALS.kemenag) + ' (<a href="#settings">ubah</a>). Bila tanggal Ramadhan yang Anda ikuti berbeda, gunakan "Koreksi jumlah". <a href="#a/puasa">Niat & batas qadha</a></p></section>';
+      '<p class="muted small">Bulan Ramadhan ditentukan dengan kalender ' + esc(U.HIJRI_CALS[d.settings.hijriCal] || U.HIJRI_CALS.kemenag) + ' (<a href="#settings">ubah</a>). Bila tanggal Ramadhan yang kamu ikuti berbeda, gunakan "Koreksi jumlah". <a href="#a/puasa">Niat & batas qadha</a></p></section>';
 
     const last = Cycle.sorted(d.periods).pop();
     if (last) {
@@ -528,7 +528,7 @@ window.Tamu = window.Tamu || {};
 
     return '<section class="card"><h3 class="card-t">Waktu shalat hari ini</h3><div class="pt">' + ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].map((k) => '<div><span>' + Prayer.NAMES[k] + '</span><b>' + U.fmtTime(tt[k]) + '</b></div>').join('') + '</div>' + status +
       (kmg ? '<button class="btn btn-soft gps-btn" data-act="gps">' + icon('pin') + (s.coords ? 'Perbarui lokasi GPS' : 'Gunakan lokasi saya (GPS)') + '</button>' +
-        (s.coords ? '<p class="muted small">Lokasi GPS tersimpan di perangkat (±100 m)' + (s.kemenag && s.kemenag.km != null ? '. Titik acuan jadwal ' + esc(s.kemenag.lokasi) + ' berjarak ±' + s.kemenag.km + ' km dari Anda' : '') + '. <button class="link" data-act="gps-forget">Hapus lokasi</button></p>' : '<p class="muted small">Lokasi hanya dipakai di HP Anda untuk mencari kab/kota Kemenag terdekat. Yang dikirim tetap hanya ID kab/kota.</p>') +
+        (s.coords ? '<p class="muted small">Lokasi GPS tersimpan di perangkat (±100 m)' + (s.kemenag && s.kemenag.km != null ? '. Titik acuan jadwal ' + esc(s.kemenag.lokasi) + ' berjarak ±' + s.kemenag.km + ' km dari kamu' : '') + '. <button class="link" data-act="gps-forget">Hapus lokasi</button></p>' : '<p class="muted small">Lokasi hanya dipakai di HP kamu untuk mencari kab/kota Kemenag terdekat. Yang dikirim tetap hanya ID kab/kota.</p>') +
         '<label class="lbl" for="kmg-q">Atau cari kabupaten/kota (data Bimas Islam Kemenag)</label><form class="kmg-form" data-act="kmg-form"><input id="kmg-q" type="search" placeholder="' + esc(s.kemenag ? s.kemenag.lokasi : 'Cari, mis. Sleman') + '" autocomplete="off" maxlength="40"><button class="btn btn-soft">Cari</button></form><div id="kmg-res" class="kmg-res"></div>' : '') +
       '<details class="rules"><summary>Pengaturan jadwal</summary>' +
       '<label class="lbl" for="src-sel">Sumber jadwal</label><select id="src-sel" data-change="jadwalSource"><option value="kemenag"' + (kmg ? ' selected' : '') + '>Jadwal resmi Kemenag RI (perlu internet sesekali)</option><option value="hitung"' + (!kmg ? ' selected' : '') + '>Hitung di perangkat (offline penuh)</option></select>' +
@@ -653,7 +653,7 @@ window.Tamu = window.Tamu || {};
     if (m.ai.status === 'error') return '<div class="ai err"><p>' + esc(m.ai.error) + '</p><button class="btn btn-ghost small" data-act="ai-retry" data-id="' + m.id + '">Coba lagi</button></div>';
     return '<div class="ai"><div class="ai-h">' + icon('learn') + '<b>Jawaban Tanya AI</b><small>disusun dari kutipan kitab · bukan fatwa</small></div><div class="ai-body">' + renderAI(m.ai.text, m.ai.ids) + '</div>' +
       (m.ai.truncated ? '<p class="muted small">Jawaban terpotong karena terlalu panjang.</p>' : '') +
-      '<p class="muted small">AI bisa keliru. Cocokkan dengan kutipan bertanda nomor, dan tanyakan kepada ustadzah untuk kasus Anda.</p></div>';
+      '<p class="muted small">AI bisa keliru. Cocokkan dengan kutipan bertanda nomor, dan tanyakan kepada ustadzah untuk kasusmu.</p></div>';
   }
 
   function botHTML(m) {
@@ -681,7 +681,7 @@ window.Tamu = window.Tamu || {};
     for (const m of state.chat) h += m.who === 'me' ? '<div class="msg me"><p>' + esc(m.text) + '</p></div>' : botHTML(m);
     h += '</section><div class="sugg">' + QA.SUGGEST.map((s) => '<button class="chip" data-act="ask" data-q="' + esc(s) + '">' + esc(s) + '</button>').join('') + '</div>' +
       '<form class="ask-bar" data-act="ask-form"><input id="ask-in" type="text" placeholder="Tulis pertanyaan…" autocomplete="off" maxlength="300" aria-label="Pertanyaan"><button class="btn btn-primary icon-only" aria-label="Kirim">' + icon('send') + '</button></form>' +
-      '<p class="muted small center">Bukan fatwa. Untuk kasus Anda, konsultasikan dengan ustadzah.' + (on ? ' Jangan menulis nama atau data pribadi dalam pertanyaan.' : '') + '</p>';
+      '<p class="muted small center">Bukan fatwa. Untuk kasusmu, konsultasikan dengan ustadzah.' + (on ? ' Jangan menulis nama atau data pribadi dalam pertanyaan.' : '') + '</p>';
     return h;
   }
 
@@ -736,8 +736,8 @@ window.Tamu = window.Tamu || {};
 
   function sheetAIConsent() {
     openSheet('<h2>Aktifkan Tanya AI?</h2>' +
-      '<ul class="promise"><li>' + icon('info') + '<span>Pertanyaan yang Anda ketik dikirim ke server Tamu, lalu diproses oleh layanan AI <b>Claude (Anthropic)</b> bersama kutipan kitab yang relevan.</span></li>' +
-      '<li>' + icon('shield') + '<span><b>Catatan haid, tanggal, dan PIN Anda tidak ikut terkirim.</b> Hanya teks pertanyaan.</span></li>' +
+      '<ul class="promise"><li>' + icon('info') + '<span>Pertanyaan yang kamu ketik dikirim ke server Tamu, lalu diproses oleh layanan AI <b>Claude (Anthropic)</b> bersama kutipan kitab yang relevan.</span></li>' +
+      '<li>' + icon('shield') + '<span><b>Catatan haid, tanggal, dan PIN kamu tidak ikut terkirim.</b> Hanya teks pertanyaan.</span></li>' +
       '<li>' + icon('info') + '<span>Jangan menulis nama atau data pribadi di pertanyaan.</span></li>' +
       '<li>' + icon('info') + '<span>Butuh internet. AI bisa keliru, jadi jawabannya selalu disertai nomor kutipan kitab untuk dicek. Bukan fatwa.</span></li></ul>' +
       '<p class="muted small">Bisa dimatikan kapan saja dari halaman Tanya atau Pengaturan.</p>' +
@@ -769,12 +769,12 @@ window.Tamu = window.Tamu || {};
       (Store.hasPin()
         ? '<p class="ok-line">' + icon('shield') + 'PIN aktif. Data terenkripsi AES-256 di perangkat ini.</p><label class="lbl" for="s-al">Kunci otomatis</label><select id="s-al" data-change="autoLock">' + opt(0, s.autoLock, 'Hanya saat aplikasi dibuka ulang') + opt(1, s.autoLock, 'Setelah 1 menit di latar') + opt(5, s.autoLock, 'Setelah 5 menit di latar') + opt(15, s.autoLock, 'Setelah 15 menit di latar') + '</select>' +
           '<div class="row gap wrap"><button class="btn btn-soft" data-act="pin-set">Ganti PIN</button><button class="btn btn-ghost" data-act="pin-remove">Matikan PIN</button><button class="btn btn-ghost" data-act="lock-now">' + icon('lock') + 'Kunci sekarang</button></div>'
-        : '<p class="muted">Aktifkan PIN agar orang lain yang memegang HP Anda tidak bisa membuka catatan. Data juga akan dienkripsi.</p><button class="btn btn-primary" data-act="pin-set"' + (Store.hasCrypto() ? '' : ' disabled') + '>' + icon('lock') + 'Aktifkan PIN</button>' + (Store.hasCrypto() ? '' : '<p class="err small">Enkripsi memerlukan HTTPS atau localhost.</p>')) +
+        : '<p class="muted">Aktifkan PIN agar orang lain yang memegang HP kamu tidak bisa membuka catatan. Data juga akan dienkripsi.</p><button class="btn btn-primary" data-act="pin-set"' + (Store.hasCrypto() ? '' : ' disabled') + '>' + icon('lock') + 'Aktifkan PIN</button>' + (Store.hasCrypto() ? '' : '<p class="err small">Enkripsi memerlukan HTTPS atau localhost.</p>')) +
       '</section>' +
 
       (AI_ENABLED ? '<section class="card form"><h3 class="card-t">' + icon('learn') + 'Tanya AI</h3><div class="ai-toggle flat"><div><b>' + (s.ai ? 'Aktif' : 'Nonaktif') + '</b><small>' + (s.ai ? 'Pertanyaan di halaman Tanya dikirim ke server Tamu dan diproses Claude (Anthropic) bersama kutipan kitab. Catatan haid tidak ikut terkirim.' : 'Semua jawaban dari pustaka offline. Tidak ada pertanyaan yang dikirim ke mana pun.') + '</small></div><button class="switch" role="switch" aria-checked="' + !!s.ai + '" aria-label="Tanya AI" data-act="ai-toggle"><i></i></button></div></section>' : '') +
 
-      '<section class="card form"><h3 class="card-t">Data Anda</h3><p class="muted">Data hanya ada di perangkat ini. Simpan cadangan untuk berjaga-jaga atau untuk pindah perangkat.</p>' +
+      '<section class="card form"><h3 class="card-t">Datamu</h3><p class="muted">Data hanya ada di perangkat ini. Simpan cadangan untuk berjaga-jaga atau untuk pindah perangkat.</p>' +
       '<div class="row gap wrap"><button class="btn btn-soft" data-act="export">' + icon('down') + 'Ekspor cadangan</button><button class="btn btn-soft" data-act="import">' + icon('up') + 'Impor cadangan</button></div>' +
             '<button class="btn btn-ghost danger" data-act="wipe">' + icon('trash') + 'Hapus semua data</button></section>' +
 
@@ -797,13 +797,13 @@ window.Tamu = window.Tamu || {};
     const ob = state.ob, s = D().settings;
     const dots = '<div class="ob-dots">' + [0, 1, 2, 3].map((i) => '<i class="' + (i === ob.step ? 'on' : '') + '"></i>').join('') + '</div>';
     if (ob.step === 0) {
-      return '<div class="ob">' + dots + '<img class="ob-logo" src="assets/logo.svg" alt="Logo Tamu" width="112" height="112"><h1>Tamu</h1><p class="ob-tag">Teman siklus muslimah. Mencatat haid, memahami fikihnya, dan menjaga privasi Anda.</p>' +
-        '<ul class="promise big"><li>' + icon('shield') + '<span><b>Data hanya di HP Anda.</b> Tanpa server, tanpa akun, tanpa iklan.</span></li><li>' + icon('book') + '<span><b>Fikih haid lengkap.</b> Status haid/istihadhah, shalat yang perlu diqadha, dan hutang puasa otomatis.</span></li><li>' + icon('moon') + '<span><b>4 fase siklus.</b> Menstruasi, folikular, ovulasi, luteal, beserta tipsnya.</span></li></ul>' +
+      return '<div class="ob">' + dots + '<img class="ob-logo" src="assets/logo.svg" alt="Logo Tamu" width="112" height="112"><h1>Tamu</h1><p class="ob-tag">Teman siklus muslimah. Mencatat haid, memahami fikihnya, dan menjaga privasimu.</p>' +
+        '<ul class="promise big"><li>' + icon('shield') + '<span><b>Data hanya di HP kamu.</b> Tanpa server, tanpa akun, tanpa iklan.</span></li><li>' + icon('book') + '<span><b>Fikih haid lengkap.</b> Status haid/istihadhah, shalat yang perlu diqadha, dan hutang puasa otomatis.</span></li><li>' + icon('moon') + '<span><b>4 fase siklus.</b> Menstruasi, folikular, ovulasi, luteal, beserta tipsnya.</span></li></ul>' +
         '<button class="btn btn-primary btn-big" data-act="ob-next">Mulai</button><button class="btn btn-ghost" data-act="import">Saya punya file cadangan</button></div>';
     }
     if (ob.step === 1) {
       return '<div class="ob form">' + dots + '<h2>Kenalan dulu</h2><label class="lbl" for="ob-name">Nama panggilan <small>(opsional, hanya untuk sapaan)</small></label><input id="ob-name" value="' + esc(s.name) + '" maxlength="30" placeholder="mis. Aisyah">' +
-        '<label class="lbl" for="ob-city">Kota terdekat <small>(untuk jadwal shalat; nanti bisa diganti ke kab/kota Anda)</small></label><select id="ob-city">' + Prayer.CITIES.map((x) => '<option value="' + x.id + '"' + (x.id === s.city ? ' selected' : '') + '>' + esc(x.name) + '</option>').join('') + '</select>' +
+        '<label class="lbl" for="ob-city">Kota terdekat <small>(untuk jadwal shalat; nanti bisa diganti ke kab/kotamu)</small></label><select id="ob-city">' + Prayer.CITIES.map((x) => '<option value="' + x.id + '"' + (x.id === s.city ? ' selected' : '') + '>' + esc(x.name) + '</option>').join('') + '</select>' +
         '<p class="muted small">Tamu tidak meminta izin lokasi. Kota hanya disimpan di perangkat.</p><div class="ob-actions"><button class="btn btn-ghost" data-act="ob-back">Kembali</button><button class="btn btn-primary" data-act="ob-next">Lanjut</button></div></div>';
     }
     if (ob.step === 2) {
@@ -813,8 +813,8 @@ window.Tamu = window.Tamu || {};
         initFormHTML(ob.init, 'ob') +
         '<div class="ob-actions"><button class="btn btn-ghost" data-act="ob-back">Kembali</button><button class="btn btn-ghost" data-act="ob-skip">Lewati</button><button class="btn btn-primary" data-act="ob-next">Lanjut</button></div></div>';
     }
-    return '<div class="ob form">' + dots + '<h2>Kunci dengan PIN?</h2><p class="muted">Disarankan. Dengan PIN, seluruh catatan dienkripsi sehingga tidak bisa dibaca orang lain meski HP Anda dipinjam.</p>' +
-      (Store.hasCrypto() ? '<label class="lbl" for="ob-pin1">PIN (4–8 angka)</label><input id="ob-pin1" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password"><label class="lbl" for="ob-pin2">Ulangi PIN</label><input id="ob-pin2" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password"><p class="err" id="ob-err"></p>' : '<p class="err">Enkripsi butuh HTTPS atau localhost. Anda bisa mengaktifkannya nanti.</p>') +
+    return '<div class="ob form">' + dots + '<h2>Kunci dengan PIN?</h2><p class="muted">Disarankan. Dengan PIN, seluruh catatan dienkripsi sehingga tidak bisa dibaca orang lain meski HP kamu dipinjam.</p>' +
+      (Store.hasCrypto() ? '<label class="lbl" for="ob-pin1">PIN (4–8 angka)</label><input id="ob-pin1" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password"><label class="lbl" for="ob-pin2">Ulangi PIN</label><input id="ob-pin2" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password"><p class="err" id="ob-err"></p>' : '<p class="err">Enkripsi butuh HTTPS atau localhost. Kamu bisa mengaktifkannya nanti.</p>') +
       '<p class="muted small"><b>PIN tidak bisa dipulihkan bila lupa.</b></p><div class="ob-actions"><button class="btn btn-ghost" data-act="ob-back">Kembali</button><button class="btn btn-ghost" data-act="ob-finish" data-pin="0">Nanti saja</button>' + (Store.hasCrypto() ? '<button class="btn btn-primary" data-act="ob-finish" data-pin="1">Aktifkan & selesai</button>' : '') + '</div></div>';
   }
   /* ---------- Data awal haid: dipakai di onboarding dan bisa dibuka ulang ---------- */
@@ -914,21 +914,21 @@ window.Tamu = window.Tamu || {};
     const hasPeriods = D().periods.some((p) => p.kind === 'haid');
     let h = '<div id="in-form" data-ctx="' + ctx + '">' +
       '<label class="lbl" for="in-s">Kapan haid terakhir dimulai?</label><div class="dt"><input type="date" id="in-s" value="' + esc(m.s) + '" max="' + today + '"><input type="time" id="in-st" value="' + esc(m.st) + '" aria-label="Jam mulai (opsional)"></div>' +
-      '<p class="muted small">Jam boleh dikosongkan bila tidak ingat. Jam berguna untuk menentukan shalat yang perlu diqadha.</p>' +
+      '<p class="muted small">Jam boleh dikosongkan kalau lupa.</p>' +
       '<label class="lbl">Sudah selesai?</label>' + chips('in-ongo', [['tidak', 'Sudah selesai'], ['ya', 'Masih haid sekarang']], m.ongo);
     if (m.ongo !== 'ya') h += '<label class="lbl" for="in-e">Kapan selesai (suci)?</label><div class="dt"><input type="date" id="in-e" value="' + esc(m.e) + '" max="' + today + '"><input type="time" id="in-et" value="' + esc(m.et) + '" aria-label="Jam selesai (opsional)"></div>';
-    h += '<div class="in-prev"><b>Haid sebelumnya</b> <small class="muted">(opsional)</small><p class="muted small">Isi 1–3 haid sebelum yang terakhir agar panjang siklus Anda langsung terhitung.</p>' +
+    h += '<div class="in-prev"><b>Haid sebelumnya</b> <small class="muted">(opsional)</small><p class="muted small">Kalau ingat, isi 1–3 haid sebelumnya supaya siklusmu langsung terhitung.</p>' +
       m.prev.map((p, i) => '<div class="prev-row"><span class="prev-n">' + (i + 1) + '</span><div><label class="lbl" for="in-ps-' + i + '">Mulai</label><input type="date" id="in-ps-' + i + '" value="' + esc(p.s) + '" max="' + today + '"></div><div><label class="lbl" for="in-pe-' + i + '">Selesai</label><input type="date" id="in-pe-' + i + '" value="' + esc(p.e) + '" max="' + today + '"></div><button class="icon-btn" data-act="in-del-prev" data-i="' + i + '" aria-label="Hapus baris">' + icon('trash') + '</button></div>').join('') +
       (m.prev.length < 3 ? '<button class="btn btn-ghost small" data-act="in-add-prev">' + icon('plus') + 'Tambah haid sebelumnya</button>' : '') + '</div>';
     h += '<div id="in-sum" class="result ' + (r.cycle ? 'tone-green' : '') + '">' + (r.cycle
-      ? '<b>' + icon('check') + 'Dari data Anda</b><p>Panjang siklus ±<b>' + r.cycle + ' hari</b>' + (r.cycles.length > 1 && Math.min(...r.cycles) !== Math.max(...r.cycles) ? ' (' + Math.min(...r.cycles) + '–' + Math.max(...r.cycles) + ' hari)' : '') + (r.period ? ', lama haid ±<b>' + r.period + ' hari</b>' : '') + '. Angka di bawah sudah terisi otomatis.</p>'
+      ? '<b>' + icon('check') + 'Dari datamu</b><p>Panjang siklus ±<b>' + r.cycle + ' hari</b>' + (r.cycles.length > 1 && Math.min(...r.cycles) !== Math.max(...r.cycles) ? ' (' + Math.min(...r.cycles) + '–' + Math.max(...r.cycles) + ' hari)' : '') + (r.period ? ', lama haid ±<b>' + r.period + ' hari</b>' : '') + '. Angka di bawah sudah terisi otomatis.</p>'
       : '<p class="muted small">' + (r.period ? 'Lama haid terakhir ±' + r.period + ' hari. ' : '') + 'Isi minimal satu haid sebelumnya agar panjang siklus bisa dihitung. Bila tidak, pakai angka perkiraan di bawah.</p>') + '</div>';
     h += '<div class="two"><div><label class="lbl" for="in-cl">Siklus biasanya (hari)</label><input type="number" id="in-cl" min="18" max="60" inputmode="numeric" value="' + m.cl + '"></div><div><label class="lbl" for="in-pl">Lama haid biasanya (hari)</label><input type="number" id="in-pl" min="1" max="15" inputmode="numeric" value="' + m.pl + '"></div></div>' +
-      '<p class="muted small">Tidak tahu? Siklus umumnya 21–35 hari dan haid 3–7 hari. Biarkan 28 dan 7, nanti menyesuaikan otomatis.</p>';
+      '<p class="muted small">Belum tahu? Biarkan 28 dan 7, nanti menyesuaikan sendiri.</p>';
     if (ctx === 'sheet' && hasPeriods) {
       h += '<label class="lbl">Simpan sebagai</label>' + chips('in-mode', [['edit', 'Perbarui data ini'], ['ganti', 'Ganti semua riwayat haid']], m.mode === 'tambah' ? 'edit' : m.mode) +
         (m.mode === 'ganti' ? '<p class="err small">Semua catatan haid lama akan dihapus dan diganti isian ini. Catatan nifas, gejala, dan qadha tidak terhapus.</p>'
-          : '<p class="muted small">Catatan haid yang tampil di atas akan diperbarui. Catatan yang lebih lama tetap aman. Baris "haid sebelumnya" yang Anda tambahkan akan ikut tersimpan.</p>');
+          : '<p class="muted small">Catatan haid yang tampil di atas akan diperbarui. Catatan yang lebih lama tetap aman. Baris "haid sebelumnya" yang kamu tambahkan akan ikut tersimpan.</p>');
     }
     if (r.warns.length) h += '<ul class="in-warn">' + r.warns.map((w) => '<li>' + esc(w) + '</li>').join('') + '</ul>';
     return h + '<p class="err" id="in-err"></p></div>';
@@ -986,7 +986,7 @@ window.Tamu = window.Tamu || {};
     const nHaid = d.periods.filter((p) => p.kind === 'haid').length, nNifas = d.periods.filter((p) => p.kind === 'nifas').length;
     const nLogs = Object.keys(d.logs).length, nQadha = (d.qadha.paid || []).length + (d.qadha.adjust ? 1 : 0);
     const opt = (id, label, count, checked) => count ? '<label class="check"><input type="checkbox" id="' + id + '"' + (checked ? ' checked' : '') + '><span>' + label + ' <small>(' + count + ')</small></span></label>' : '';
-    openSheet('<h2>Reset catatan haid</h2><p>Semua <b>' + nHaid + ' catatan haid</b> akan dihapus agar Anda bisa mengisi ulang dari nol. Setelah itu formulir tanggal & jam haid langsung terbuka.</p>' +
+    openSheet('<h2>Reset catatan haid</h2><p>Semua <b>' + nHaid + ' catatan haid</b> akan dihapus agar kamu bisa mengisi ulang dari nol. Setelah itu formulir tanggal & jam haid langsung terbuka.</p>' +
       '<p class="muted small">Yang <b>tidak</b> terhapus: nama, PIN, panjang siklus & lama haid, lokasi jadwal shalat, kalender Hijriah, dan pengaturan lain.</p>' +
       '<div class="checks">' + opt('rs-nifas', 'Hapus juga catatan nifas', nNifas, true) + opt('rs-logs', 'Hapus juga catatan harian (gejala, warna darah, suasana hati)', nLogs, false) + opt('rs-qadha', 'Hapus juga riwayat qadha puasa', nQadha, false) + '</div>' +
       '<p class="muted small">Ingin berjaga-jaga? <button class="link" data-act="export">Unduh cadangan dulu</button>. Setelah reset, tombol <b>Urungkan</b> tersedia beberapa detik.</p>' +
@@ -1014,7 +1014,7 @@ window.Tamu = window.Tamu || {};
     state.init = initModel();
     state.initCtx = 'sheet';
     const editing = state.init.mode === 'edit';
-    openSheet('<h2>Tanggal & jam haid</h2><p class="muted">' + (editing ? 'Ini catatan haid Anda saat ini. Ubah tanggal atau jam bila kurang tepat; prediksi langsung dihitung ulang dari data ini.' : 'Isi kapan haid terakhir dimulai (dan jamnya bila ingat). Prediksi kalender langsung dimulai dari sini.') + '</p>' + initFormHTML(state.init, 'sheet') +
+    openSheet('<h2>Tanggal & jam haid</h2><p class="muted">' + (editing ? 'Ubah yang kurang tepat, perkiraannya langsung dihitung ulang.' : 'Isi seingatnya saja, nanti bisa diubah.') + '</p>' + initFormHTML(state.init, 'sheet') +
       '<div class="sheet-actions"><button class="btn btn-ghost" data-act="close-sheet">Batal</button><button class="btn btn-primary" data-act="in-save">' + icon('check') + 'Simpan</button></div>', { noFocus: true });
   }
 
@@ -1043,13 +1043,13 @@ window.Tamu = window.Tamu || {};
     Store.requestPersist();
     location.hash = '#home';
     render();
-    toast(withPin ? 'PIN aktif. Data Anda terenkripsi.' : 'Selesai! Selamat datang di Tamu.');
+    toast(withPin ? 'PIN aktif. Datamu terenkripsi.' : 'Selesai! Selamat datang di Tamu.');
     kmgSync(false);
   }
 
   /* ---------- Kunci ---------- */
   function viewLock() {
-    return '<div class="ob lock"><img class="ob-logo" src="assets/logo.svg" alt="" width="88" height="88"><h2>Tamu terkunci</h2><p class="muted">Masukkan PIN untuk membuka catatan Anda.</p>' +
+    return '<div class="ob lock"><img class="ob-logo" src="assets/logo.svg" alt="" width="88" height="88"><h2>Tamu terkunci</h2><p class="muted">Masukkan PIN untuk membuka catatanmu.</p>' +
       '<form data-act="unlock-form" class="lock-form"><input id="lk-pin" type="password" inputmode="numeric" autocomplete="current-password" maxlength="8" aria-label="PIN" autofocus><button class="btn btn-primary btn-big">' + icon('lock') + 'Buka</button></form><p class="err" id="lk-err"></p>' +
       '<button class="btn btn-ghost small" data-act="forgot">Lupa PIN?</button></div>';
   }
@@ -1057,9 +1057,7 @@ window.Tamu = window.Tamu || {};
   /** Footer hak cipta: tahun mengikuti jam perangkat, jadi otomatis berganti setiap tahun baru. */
   function appFooter() {
     const year = new Date().getFullYear();
-    return '<footer class="app-footer"><p><b>© ' + year + ' Tamu</b> · Hak cipta dilindungi undang-undang.</p>' +
-      '<p>Dilindungi Undang-Undang Republik Indonesia Nomor 28 Tahun 2014 tentang Hak Cipta. Kutipan kitab (OpenITI, CC BY-NC-SA 4.0) dan data pihak ketiga mengikuti lisensinya masing-masing.</p>' +
-      (T.VERSION ? '<p>Versi ' + T.VERSION + '</p>' : '') + '</footer>';
+    return '<footer class="app-footer">© ' + year + ' Tamu for Muslimah · Dilindungi undang-undang.</footer>';
   }
 
   /* ---------- Render & navigasi ---------- */
@@ -1182,10 +1180,10 @@ window.Tamu = window.Tamu || {};
     },
     'lock-now': async () => { await Store.flush(); location.reload(); },
     forgot: () => {
-      openSheet('<h2>Lupa PIN</h2><p>Karena Tamu tidak punya server, PIN <b>tidak bisa dipulihkan</b> dan data terenkripsi tidak bisa dibuka tanpanya.</p><p>Anda bisa menghapus semua data di perangkat ini, lalu memulai lagi atau mengimpor file cadangan.</p><label class="lbl" for="wp">Ketik <b>HAPUS</b> untuk konfirmasi</label><input id="wp" autocomplete="off"><div class="sheet-actions"><button class="btn btn-ghost" data-act="close-sheet">Batal</button><button class="btn btn-primary danger-bg" data-act="wipe-ok">Hapus semua data</button></div>');
+      openSheet('<h2>Lupa PIN</h2><p>Karena Tamu tidak punya server, PIN <b>tidak bisa dipulihkan</b> dan data terenkripsi tidak bisa dibuka tanpanya.</p><p>Kamu bisa menghapus semua data di perangkat ini, lalu memulai lagi atau mengimpor file cadangan.</p><label class="lbl" for="wp">Ketik <b>HAPUS</b> untuk konfirmasi</label><input id="wp" autocomplete="off"><div class="sheet-actions"><button class="btn btn-ghost" data-act="close-sheet">Batal</button><button class="btn btn-primary danger-bg" data-act="wipe-ok">Hapus semua data</button></div>');
     },
     export: () => {
-      openSheet('<h2>Ekspor cadangan</h2><p class="muted">File berisi seluruh catatan Anda. Beri kata sandi agar aman bila file tersimpan di tempat lain (chat, cloud, flashdisk).</p><label class="lbl" for="ex-pw">Kata sandi file <small>(sangat disarankan)</small></label><input id="ex-pw" type="password" autocomplete="new-password"><div class="sheet-actions"><button class="btn btn-ghost" data-act="close-sheet">Batal</button><button class="btn btn-primary" data-act="export-ok">' + icon('down') + 'Unduh file</button></div>');
+      openSheet('<h2>Ekspor cadangan</h2><p class="muted">File berisi seluruh catatanmu. Beri kata sandi agar aman bila file tersimpan di tempat lain (chat, cloud, flashdisk).</p><label class="lbl" for="ex-pw">Kata sandi file <small>(sangat disarankan)</small></label><input id="ex-pw" type="password" autocomplete="new-password"><div class="sheet-actions"><button class="btn btn-ghost" data-act="close-sheet">Batal</button><button class="btn btn-primary" data-act="export-ok">' + icon('down') + 'Unduh file</button></div>');
     },
     'export-ok': async () => {
       const pw = val('ex-pw');
@@ -1257,7 +1255,7 @@ window.Tamu = window.Tamu || {};
         markSetup('lokasi'); save();
         render();
         if (r.near) { toast('Lokasi ditemukan: ' + r.near.lokasi + ' (±' + Math.round(r.near.km) + ' km). Mengunduh jadwal Kemenag…'); kmgSync(true); }
-        else toast('Lokasi di luar Indonesia: jadwal dihitung offline untuk lokasi GPS Anda.');
+        else toast('Lokasi di luar Indonesia: jadwal dihitung offline untuk lokasi GPS kamu.');
       } catch (e) {
         el.disabled = false;
         toast(e.message || 'Gagal mendapatkan lokasi.');
@@ -1394,7 +1392,7 @@ window.Tamu = window.Tamu || {};
   }
 
   function boot() {
-    T.VERSION = '1.7.0';
+    T.VERSION = '1.8.1';
     Store.load();
     applyTheme();
     bind();

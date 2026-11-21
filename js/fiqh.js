@@ -153,7 +153,7 @@ window.Tamu = window.Tamu || {};
       code: 'lebih15', tone: 'amber', label: 'Melebihi 15 hari: istihadhah', haidRange: [s, hEnd],
       lines: ['Darah keluar lebih dari 15 hari, jadi ada bagian yang dihukumi istihadhah.',
         'Pertama, lihat sifat darah (tamyiz). Darah kuat (hitam/merah pekat, kental, berbau) adalah haid, dan darah lemah (merah muda/kekuningan) adalah istihadhah.',
-        a ? 'Jika tidak bisa membedakan, ikuti kebiasaan (\'adah) Anda: ' + U.fmtDuration(a) + '. Jadi haid sampai ' + U.fmtDateTime(hEnd) + ', setelah itu istihadhah.'
+        a ? 'Jika tidak bisa membedakan, ikuti kebiasaan (\'adah) kamu: ' + U.fmtDuration(a) + '. Jadi haid sampai ' + U.fmtDateTime(hEnd) + ', setelah itu istihadhah.'
           : 'Karena belum ada catatan kebiasaan, bagi yang baru pertama haid (mubtada\'ah) dan tidak bisa membedakan darah: haid dihitung sehari semalam, sisanya istihadhah.',
         'Selama istihadhah tetap wajib shalat dan puasa. Shalat yang tertinggal setelah batas haid perlu diqadha.',
         'Kasus istihadhah sebaiknya dikonsultasikan dengan ustadzah.'],
@@ -163,7 +163,7 @@ window.Tamu = window.Tamu || {};
   /** Koordinat untuk hitung offline: lokasi GPS (bila pernah diizinkan) atau kota cadangan. */
   function coords(data) {
     const c = data.settings.coords;
-    if (c && isFinite(c.lat) && isFinite(c.lng)) return { lat: c.lat, lng: c.lng, name: 'lokasi GPS Anda' };
+    if (c && isFinite(c.lat) && isFinite(c.lng)) return { lat: c.lat, lng: c.lng, name: 'lokasi GPS kamu' };
     return T.Prayer.city(data.settings.city);
   }
 
@@ -176,7 +176,7 @@ window.Tamu = window.Tamu || {};
     }
     const mins = Math.floor((t - w.start) / 6e4);
     if (mins >= 10) {
-      return { tone: 'warn', text: 'Haid mulai pukul ' + U.fmtTime(t) + ', saat waktu ' + w.name + ' sudah berjalan ' + U.fmtDuration(t - w.start) + ' (masuk ' + U.fmtTime(w.start) + '). Jika Anda belum sempat shalat ' + w.name + ', wajib mengqadhanya setelah suci.' };
+      return { tone: 'warn', text: 'Haid mulai pukul ' + U.fmtTime(t) + ', saat waktu ' + w.name + ' sudah berjalan ' + U.fmtDuration(t - w.start) + ' (masuk ' + U.fmtTime(w.start) + '). Jika kamu belum sempat shalat ' + w.name + ', wajib mengqadhanya setelah suci.' };
     }
     return { tone: 'ok', text: 'Haid mulai ' + mins + ' menit setelah masuk waktu ' + w.name + ' (' + U.fmtTime(w.start) + '). Jika waktu itu belum cukup untuk bersuci dan shalat, shalat ' + w.name + ' tidak wajib diqadha.' };
   }
@@ -231,7 +231,7 @@ window.Tamu = window.Tamu || {};
     now = now || new Date();
     const ps = T.Cycle.sorted(data.periods).filter((p) => new Date(p.start) <= now);
     const last = ps[ps.length - 1];
-    if (!last) return { code: 'kosong', tone: 'green', title: 'Belum ada catatan', sub: 'Catat haid pertama Anda untuk mulai.' };
+    if (!last) return { code: 'kosong', tone: 'green', title: 'Belum ada catatan', sub: 'Catat haid pertama kamu untuk mulai.' };
     const ev = evaluate(data, last, now);
     if (!last.end) {
       if (ev.code === 'lebih15' || ev.code === 'suci-kurang' || ev.code === 'nifas-lebih') {

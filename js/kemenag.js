@@ -180,7 +180,7 @@ window.Tamu = window.Tamu || {};
     const t = lookup(date || new Date());
     const s = settings();
     if (t) return 'Jadwal resmi Kemenag RI · ' + (T.Store.data.jadwal.lokasi || s.kemenag.lokasi);
-    return 'Dihitung offline untuk ' + (s.coords ? 'lokasi GPS Anda' : T.Prayer.city(s.city).name) + ' (metode Kemenag)';
+    return 'Dihitung offline untuk ' + (s.coords ? 'lokasi GPS kamu' : T.Prayer.city(s.city).name) + ' (metode Kemenag)';
   }
 
   /* ---------- GPS → kab/kota Kemenag terdekat (dicocokkan di perangkat; koordinat tidak dikirim) ---------- */

@@ -56,7 +56,7 @@ window.Tamu = window.Tamu || {};
 <h3>Medis vs fikih</h3>
 <p>Secara medis, haid umumnya 2–7 hari. Fikih (mazhab Syafi'i) punya batas sendiri untuk menentukan hukum ibadah: <b>minimal 24 jam, umumnya 6–7 hari, maksimal 15 hari</b>. Masa suci di antara dua haid minimal <b>15 hari</b>. Tamu menampilkan keduanya: prediksi siklus untuk kesehatan, dan status hukum untuk ibadah.</p>
 <h3>Kenapa perlu mencatat?</h3>
-<p>Catatan yang rutin membantu Anda mengetahui kebiasaan (<i>'adah</i>), dan ini penting dalam fikih bila suatu saat terjadi istihadhah. Catatan juga sangat membantu dokter bila ada keluhan.</p>`,
+<p>Catatan yang rutin membantu kamu mengetahui kebiasaan (<i>'adah</i>), dan ini penting dalam fikih bila suatu saat terjadi istihadhah. Catatan juga sangat membantu dokter bila ada keluhan.</p>`,
     },
     {
       id: 'empat-fase', cat: 'siklus', title: '4 fase siklus & apa yang terjadi', mins: 4,
@@ -73,7 +73,7 @@ window.Tamu = window.Tamu || {};
     {
       id: 'tanda-bahaya', cat: 'siklus', title: 'Kapan harus ke dokter?', mins: 2,
       body: `<p>Segera konsultasi ke dokter atau bidan bila:</p><ul>
-<li>Haid tidak datang selama <b>3 bulan</b> berturut-turut dan Anda tidak hamil</li>
+<li>Haid tidak datang selama <b>3 bulan</b> berturut-turut dan kamu tidak hamil</li>
 <li>Siklus terus-menerus <b>lebih pendek dari 21 hari</b> atau <b>lebih panjang dari 35 hari</b></li>
 <li>Haid lebih dari <b>7 hari</b>, atau sangat deras (ganti pembalut tiap 1–2 jam, ada gumpalan besar)</li>
 <li>Perdarahan di luar jadwal haid atau setelah berhubungan</li>
@@ -86,7 +86,7 @@ window.Tamu = window.Tamu || {};
       id: 'telat', cat: 'siklus', title: 'Haid terlambat: apa penyebabnya?', mins: 3,
       body: `<p>Haid disebut terlambat bila belum datang lebih dari sekitar <b>7 hari</b> dari perkiraan. Penyebab yang umum:</p>
 <ul><li><b>Kehamilan</b>: lakukan tes kehamilan (test pack) dengan urine pagi</li><li>Stres berat, kurang tidur, atau perubahan rutinitas (perjalanan, begadang)</li><li>Perubahan berat badan yang drastis atau olahraga berlebihan</li><li>Menyusui</li><li>PCOS (sindrom ovarium polikistik) atau gangguan tiroid</li><li>Efek kontrasepsi hormonal</li></ul>
-<p>Secara fikih, haid yang terlambat tidak mengubah apa pun: selama tidak ada darah, Anda suci dan wajib shalat serta puasa.</p>`,
+<p>Secara fikih, haid yang terlambat tidak mengubah apa pun: selama tidak ada darah, kamu suci dan wajib shalat serta puasa.</p>`,
     },
     {
       id: 'kebersihan', cat: 'siklus', title: 'Kebersihan saat haid', mins: 2,
@@ -135,10 +135,10 @@ window.Tamu = window.Tamu || {};
     },
     {
       id: 'shalat', cat: 'fikih', title: 'Haid & kewajiban shalat di awal/akhir waktu', mins: 3,
-      body: `<h3>Saat haid datang</h3><p>Jika haid datang <b>setelah masuk waktu shalat</b> dan sudah lewat waktu yang cukup untuk shalat itu, tetapi Anda belum shalat, maka shalat tersebut <b>wajib diqadha</b> setelah suci.</p>
+      body: `<h3>Saat haid datang</h3><p>Jika haid datang <b>setelah masuk waktu shalat</b> dan sudah lewat waktu yang cukup untuk shalat itu, tetapi kamu belum shalat, maka shalat tersebut <b>wajib diqadha</b> setelah suci.</p>
 <h3>Saat haid berhenti</h3><p>Jika darah berhenti sebelum waktu shalat habis, walau hanya cukup untuk takbiratul ihram, shalat waktu itu wajib dikerjakan. Bila waktunya terlewat saat mandi, shalat tersebut diqadha.</p>
 <ul><li>Suci di waktu <b>Ashar</b>: wajib <b>Dzuhur dan Ashar</b>.</li><li>Suci di waktu <b>Isya</b>: wajib <b>Maghrib dan Isya</b>.</li><li>Suci di waktu Subuh, Dzuhur, atau Maghrib: wajib shalat waktu itu saja.</li></ul>
-<p>Saat Anda mencatat jam mulai dan jam berhenti, Tamu mencocokkannya dengan jadwal shalat resmi Kemenag untuk kab/kota Anda (atau hitungan offline bila jadwal belum terunduh) dan memberi tahu shalat mana yang perlu dikerjakan atau diqadha.</p>`,
+<p>Saat kamu mencatat jam mulai dan jam berhenti, Tamu mencocokkannya dengan jadwal shalat resmi Kemenag untuk kab/kotamu (atau hitungan offline bila jadwal belum terunduh) dan memberi tahu shalat mana yang perlu dikerjakan atau diqadha.</p>`,
     },
     {
       id: 'puasa', cat: 'fikih', title: 'Haid, puasa Ramadhan & qadha', mins: 3,
@@ -147,7 +147,7 @@ window.Tamu = window.Tamu || {};
 <li>Darah berhenti di siang hari: tidak wajib puasa hari itu, tetapi dianjurkan menahan diri dari makan dan minum untuk menghormati Ramadhan.</li></ul>
 <h3>Batas qadha</h3><p>Qadha sebaiknya segera dilakukan, paling lambat <b>sebelum Ramadhan berikutnya</b>. Jika ditunda tanpa uzur hingga Ramadhan berikutnya tiba, menurut mazhab Syafi'i wajib qadha ditambah <b>fidyah 1 mud</b> (sekitar 6–7 ons makanan pokok) untuk setiap hari, dan fidyah ini berlipat sesuai jumlah tahun penundaan.</p>
 <h3>Niat qadha puasa Ramadhan</h3><p class="arab" dir="rtl" lang="ar">نَوَيْتُ صَوْمَ غَدٍ عَنْ قَضَاءِ فَرْضِ شَهْرِ رَمَضَانَ لِلّٰهِ تَعَالَى</p><p><i>Nawaitu shauma ghadin 'an qadhā'i fardhi syahri Ramadhāna lillāhi ta'ālā.</i><br>"Aku berniat puasa esok hari untuk mengqadha fardhu bulan Ramadhan karena Allah Ta'ala."</p>
-<p>Tamu menghitung otomatis hari Ramadhan yang terlewat dari catatan haid Anda (berdasarkan kalender Hijriah Umm al-Qura), dan Anda bisa mencentang setiap qadha yang sudah dibayar.</p>`,
+<p>Tamu menghitung otomatis hari Ramadhan yang terlewat dari catatan haidmu (berdasarkan kalender Hijriah Umm al-Qura), dan kamu bisa mencentang setiap qadha yang sudah dibayar.</p>`,
     },
     {
       id: 'mandi', cat: 'ibadah', title: 'Niat & tata cara mandi wajib', mins: 3,
@@ -185,7 +185,7 @@ window.Tamu = window.Tamu || {};
     },
     {
       id: 'privasi', cat: 'siklus', title: 'Kenapa data di Tamu aman', mins: 2,
-      body: `<ul><li><b>Tidak ada server.</b> Tamu tidak punya basis data online. Semua catatan disimpan di perangkat Anda sendiri.</li><li><b>Tanpa akun, tanpa email, tanpa nomor HP.</b></li><li><b>Tanpa iklan, pelacak, atau analitik.</b> Tamu tidak memuat skrip dari pihak lain.</li><li><b>Satu-satunya koneksi internet</b> adalah untuk mengunduh jadwal shalat resmi Kemenag (data Bimas Islam melalui api.myquran.com). Yang dikirim hanya ID kab/kota dan bulan, tanpa data haid atau identitas. Jadwal disimpan di perangkat, dan fitur ini bisa dimatikan di <i>Fikih → Pengaturan jadwal</i> agar Tamu berjalan offline penuh.</li><li><b>Enkripsi PIN</b>: bila PIN diaktifkan, seluruh data dienkripsi dengan AES-256 menggunakan kunci dari PIN Anda. Tanpa PIN, data tidak bisa dibaca, termasuk oleh pembuat aplikasi.</li><li><b>Anda pemilik data.</b> Ekspor cadangan (bisa diberi kata sandi) untuk pindah HP, atau hapus semuanya kapan saja.</li></ul>
+      body: `<ul><li><b>Tidak ada server.</b> Tamu tidak punya basis data online. Semua catatan disimpan di perangkatmu sendiri.</li><li><b>Tanpa akun, tanpa email, tanpa nomor HP.</b></li><li><b>Tanpa iklan, pelacak, atau analitik.</b> Tamu tidak memuat skrip dari pihak lain.</li><li><b>Satu-satunya koneksi internet</b> adalah untuk mengunduh jadwal shalat resmi Kemenag (data Bimas Islam melalui api.myquran.com). Yang dikirim hanya ID kab/kota dan bulan, tanpa data haid atau identitas. Jadwal disimpan di perangkat, dan fitur ini bisa dimatikan di <i>Fikih → Pengaturan jadwal</i> agar Tamu berjalan offline penuh.</li><li><b>Enkripsi PIN</b>: bila PIN diaktifkan, seluruh data dienkripsi dengan AES-256 menggunakan kunci dari PIN kamu. Tanpa PIN, data tidak bisa dibaca, termasuk oleh pembuat aplikasi.</li><li><b>Kamu pemilik data.</b> Ekspor cadangan (bisa diberi kata sandi) untuk pindah HP, atau hapus semuanya kapan saja.</li></ul>
 <p class="note">Karena tidak ada server, PIN yang lupa tidak bisa dipulihkan. Simpan cadangan secara berkala.</p>`,
     },
   ];
@@ -200,11 +200,11 @@ window.Tamu = window.Tamu || {};
     { k: 'flek coklat kuning keruh sebelum sesudah haid', q: 'Flek coklat atau kuning termasuk haid?', a: 'Dalam mazhab Syafi\'i, cairan <b>kuning (shufrah)</b> dan <b>keruh/kecoklatan (kudrah)</b> yang keluar dalam masa yang memungkinkan haid (total tidak melebihi 15 hari dan masa suci minimal 15 hari sudah terpenuhi) <b>dihukumi haid</b>.', see: 'warna-darah' },
     { k: 'tanda suci tahu sudah bersih selesai cairan putih kapas', q: 'Bagaimana mengetahui haid sudah selesai?', a: 'Tanda suci: keluar <b>cairan putih bening</b>, atau kapas/tisu yang dimasukkan ke bagian luar kemaluan keluar <b>bersih tanpa noda</b> kuning atau keruh. Setelah itu segera mandi wajib.', see: 'warna-darah' },
     { k: 'berhenti keluar lagi terputus putus naqa bersih sehari', q: 'Darah berhenti sehari lalu keluar lagi, bagaimana?', a: 'Selama total dari awal hingga akhir darah <b>tidak melebihi 15 hari</b>, seluruhnya termasuk hari bersih di sela-selanya dihukumi haid (qaul as-sahb). Saat bersih, tetap mandi dan shalat. Jika darah kembali, puasa wajib yang dikerjakan di hari bersih itu harus diqadha.', see: 'naqa' },
-    { k: 'haid datang masuk waktu shalat qadha belum shalat', q: 'Haid datang setelah masuk waktu shalat, apakah wajib qadha?', a: 'Ya, jika sejak masuk waktu sudah lewat waktu yang cukup untuk mengerjakan shalat itu tetapi Anda belum shalat, shalat tersebut <b>wajib diqadha</b> setelah suci. Catat jam mulai haid di Tamu untuk melihat analisisnya.', see: 'shalat' },
+    { k: 'haid datang masuk waktu shalat qadha belum shalat', q: 'Haid datang setelah masuk waktu shalat, apakah wajib qadha?', a: 'Ya, jika sejak masuk waktu sudah lewat waktu yang cukup untuk mengerjakan shalat itu tetapi kamu belum shalat, shalat tersebut <b>wajib diqadha</b> setelah suci. Catat jam mulai haid di Tamu untuk melihat analisisnya.', see: 'shalat' },
     { k: 'suci waktu ashar isya dzuhur maghrib wajib jamak', q: 'Suci di waktu Ashar, apakah wajib shalat Dzuhur juga?', a: 'Ya. Dalam mazhab Syafi\'i, suci di waktu <b>Ashar</b> mewajibkan <b>Dzuhur dan Ashar</b>, dan suci di waktu <b>Isya</b> mewajibkan <b>Maghrib dan Isya</b>, karena pasangan shalat ini bisa dijamak. Syaratnya, waktu yang tersisa minimal cukup untuk takbiratul ihram.', see: 'shalat' },
     { k: 'shalat qadha ditinggal selama haid diganti', q: 'Apakah shalat yang ditinggalkan saat haid harus diganti?', a: '<b>Tidak.</b> Shalat yang ditinggalkan karena haid atau nifas tidak diqadha. Yang wajib diqadha adalah <b>puasa</b>. Aisyah r.a. berkata: "Kami diperintahkan mengqadha puasa dan tidak diperintahkan mengqadha shalat." (HR. Muslim)', see: 'larangan' },
-    { k: 'haid saat puasa siang hari batal menjelang maghrib', q: 'Haid datang saat sedang puasa, bagaimana?', a: 'Puasa hari itu <b>batal</b>, walaupun haid datang sesaat sebelum Maghrib, dan wajib diqadha. Anda boleh makan dan minum, tetapi sebaiknya tidak di hadapan orang yang berpuasa.', see: 'puasa' },
-    { k: 'suci malam sebelum subuh belum mandi puasa sah sahur', q: 'Suci sebelum Subuh tapi belum mandi, apakah puasanya sah?', a: '<b>Sah</b>, asalkan darah sudah berhenti sebelum fajar dan Anda berniat puasa di malam hari. Mandi wajib boleh dilakukan setelah Subuh, tetapi jangan sampai shalat Subuh terlewat.', see: 'puasa' },
+    { k: 'haid saat puasa siang hari batal menjelang maghrib', q: 'Haid datang saat sedang puasa, bagaimana?', a: 'Puasa hari itu <b>batal</b>, walaupun haid datang sesaat sebelum Maghrib, dan wajib diqadha. Kamu boleh makan dan minum, tetapi sebaiknya tidak di hadapan orang yang berpuasa.', see: 'puasa' },
+    { k: 'suci malam sebelum subuh belum mandi puasa sah sahur', q: 'Suci sebelum Subuh tapi belum mandi, apakah puasanya sah?', a: '<b>Sah</b>, asalkan darah sudah berhenti sebelum fajar dan kamu berniat puasa di malam hari. Mandi wajib boleh dilakukan setelah Subuh, tetapi jangan sampai shalat Subuh terlewat.', see: 'puasa' },
     { k: 'batas qadha puasa fidyah tunda ramadhan berikutnya', q: 'Sampai kapan batas qadha puasa? Apakah ada fidyah?', a: 'Qadha paling lambat <b>sebelum Ramadhan berikutnya</b>. Jika ditunda tanpa uzur hingga Ramadhan berikutnya tiba, menurut mazhab Syafi\'i wajib <b>qadha ditambah fidyah 1 mud</b> (sekitar 6–7 ons makanan pokok) per hari, berlipat sesuai jumlah tahun penundaan.', see: 'puasa' },
     { k: 'niat qadha puasa ramadhan bacaan lafal', q: 'Bagaimana niat qadha puasa Ramadhan?', a: '<span class="arab" dir="rtl" lang="ar">نَوَيْتُ صَوْمَ غَدٍ عَنْ قَضَاءِ فَرْضِ شَهْرِ رَمَضَانَ لِلّٰهِ تَعَالَى</span><br><i>Nawaitu shauma ghadin \'an qadhā\'i fardhi syahri Ramadhāna lillāhi ta\'ālā.</i> Niat qadha wajib dilakukan pada malam hari sebelum fajar.', see: 'puasa' },
     { k: 'niat mandi wajib haid bacaan lafal mandi besar', q: 'Bagaimana niat mandi wajib setelah haid?', a: '<span class="arab" dir="rtl" lang="ar">نَوَيْتُ الْغُسْلَ لِرَفْعِ حَدَثِ الْحَيْضِ لِلّٰهِ تَعَالَى</span><br><i>Nawaitul ghusla liraf\'i hadatsil haidhi lillāhi ta\'ālā.</i> Rukunnya adalah niat dan meratakan air ke seluruh kulit dan rambut.', see: 'mandi' },
@@ -228,12 +228,12 @@ window.Tamu = window.Tamu || {};
     { k: 'darah pakaian najis noda bekas mencuci', q: 'Pakaian terkena darah haid, bagaimana?', a: 'Darah haid najis, jadi wajib dicuci hingga hilang zatnya. Bekas warna yang sulit hilang setelah dicuci dengan sungguh-sungguh <b>dimaafkan</b>.', see: 'kebersihan' },
     { k: 'talak cerai saat haid', q: 'Bagaimana hukum talak saat istri haid?', a: 'Suami <b>haram</b> menjatuhkan talak saat istri haid (talak bid\'i), tetapi menurut jumhur ulama talaknya tetap jatuh.', see: 'larangan' },
     { k: 'siklus tidak teratur normal berapa hari', q: 'Siklus saya tidak teratur, apakah normal?', a: 'Siklus normal dewasa <b>21–35 hari</b>, dan selisih beberapa hari antar bulan itu wajar. Siklus yang selalu di luar rentang itu, atau selisihnya lebih dari 7–9 hari, sebaiknya dikonsultasikan ke dokter. Tamu menampilkan <b>rentang</b> perkiraan, bukan satu tanggal, agar lebih jujur untuk siklus tidak teratur.', see: 'siklus-dasar' },
-    { k: 'telat terlambat belum haid hamil test pack', q: 'Haid saya terlambat, apa yang harus dilakukan?', a: 'Bila terlambat lebih dari sekitar 7 hari dan ada kemungkinan hamil, lakukan <b>test pack</b>. Penyebab lain: stres, perubahan berat badan, menyusui, PCOS, atau tiroid. Bila 3 bulan tidak haid, periksakan ke dokter. Secara fikih, selama tidak ada darah Anda suci.', see: 'telat' },
+    { k: 'telat terlambat belum haid hamil test pack', q: 'Haid saya terlambat, apa yang harus dilakukan?', a: 'Bila terlambat lebih dari sekitar 7 hari dan ada kemungkinan hamil, lakukan <b>test pack</b>. Penyebab lain: stres, perubahan berat badan, menyusui, PCOS, atau tiroid. Bila 3 bulan tidak haid, periksakan ke dokter. Secara fikih, selama tidak ada darahmu suci.', see: 'telat' },
     { k: 'nyeri kram sakit perut dismenore', q: 'Bagaimana meredakan nyeri haid?', a: 'Kompres hangat, olahraga ringan, cukup tidur, serta kurangi garam dan kafein. Obat pereda nyeri yang dijual bebas boleh dipakai sesuai aturan. Ke dokter bila nyeri sangat hebat atau makin parah.', see: 'pms' },
     { k: 'masa subur ovulasi kapan hamil program', q: 'Kapan masa subur saya?', a: 'Ovulasi terjadi sekitar <b>14 hari sebelum haid berikutnya</b>. Masa subur sekitar 6 hari: 5 hari sebelum ovulasi hingga sehari sesudahnya. Lihat tanda hijau di Kalender. Ingat, ini perkiraan dan <b>bukan alat kontrasepsi</b>.', see: 'empat-fase' },
-    { k: 'fase siklus luteal folikular menstruasi ovulasi', q: 'Apa saja fase dalam siklus haid?', a: 'Ada empat: <b>Menstruasi</b> (haid), <b>Folikular</b> (setelah haid, energi naik), <b>Ovulasi</b> (masa subur), dan <b>Luteal</b> (menjelang haid, PMS). Fase Anda hari ini terlihat di Beranda.', see: 'empat-fase' },
+    { k: 'fase siklus luteal folikular menstruasi ovulasi', q: 'Apa saja fase dalam siklus haid?', a: 'Ada empat: <b>Menstruasi</b> (haid), <b>Folikular</b> (setelah haid, energi naik), <b>Ovulasi</b> (masa subur), dan <b>Luteal</b> (menjelang haid, PMS). Fase kamu hari ini terlihat di Beranda.', see: 'empat-fase' },
     { k: 'data aman privasi server disimpan dijual', q: 'Apakah data saya disimpan di server?', a: '<b>Tidak.</b> Tamu tidak punya server dan basis data online. Semua catatan disimpan di perangkat ini, dan bisa dienkripsi dengan PIN. Tidak ada akun, iklan, atau pelacak. Koneksi internet hanya dipakai untuk mengunduh jadwal shalat Kemenag (hanya ID kab/kota yang dikirim), dan itu bisa dimatikan.', see: 'privasi' },
-    { k: 'pindah hp baru backup cadangan ekspor impor', q: 'Bagaimana memindahkan data ke HP baru?', a: 'Buka <b>Pengaturan → Ekspor cadangan</b> (bisa diberi kata sandi), kirim filenya ke HP baru dengan cara yang Anda percayai, lalu pilih <b>Impor cadangan</b> di HP baru.', see: 'privasi' },
+    { k: 'pindah hp baru backup cadangan ekspor impor', q: 'Bagaimana memindahkan data ke HP baru?', a: 'Buka <b>Pengaturan → Ekspor cadangan</b> (bisa diberi kata sandi), kirim filenya ke HP baru dengan cara yang kamu percayai, lalu pilih <b>Impor cadangan</b> di HP baru.', see: 'privasi' },
     { k: 'lupa pin kunci', q: 'Saya lupa PIN, bagaimana?', a: 'Karena tidak ada server, PIN <b>tidak bisa dipulihkan</b>. Data terenkripsi tidak dapat dibuka tanpa PIN. Satu-satunya pilihan adalah menghapus data lalu mengimpor cadangan, jika ada.', see: 'privasi' },
   ];
 

@@ -74,9 +74,9 @@ window.Tamu = window.Tamu || {};
   /** Penjelasan singkat dasar prediksi untuk ditampilkan ke pengguna. */
   function basisText(st) {
     const base = 'siklus ' + st.avgCycle + ' hari · haid ' + st.avgPeriod + ' hari';
-    if (st.source === 'manual') return base + ' (sesuai pengaturan Anda)';
+    if (st.source === 'manual') return base + ' (sesuai pengaturanmu)';
     if (st.source === 'data') return base + ' (otomatis dari ' + st.count + ' siklus terakhir)';
-    if (st.source === 'blend') return base + ' (gabungan catatan Anda dan pengaturan; makin akurat setelah 3 siklus)';
+    if (st.source === 'blend') return base + ' (gabungan catatanmu dan pengaturan; makin akurat setelah 3 siklus)';
     return base + ' (dari pengaturan; akan menyesuaikan otomatis setelah ada haid yang tercatat lengkap)';
   }
 
