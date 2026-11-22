@@ -81,6 +81,25 @@ window.Tamu = window.Tamu || {};
     const t = D() ? D().settings.theme : 'auto';
     if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
     else document.documentElement.removeAttribute('data-theme');
+    syncThemeSwitch();
+  }
+  /** Tema yang sedang tampil: pilihan pengguna, atau mengikuti perangkat bila "auto". */
+  function isDarkNow() {
+    const t = D() ? D().settings.theme : 'auto';
+    if (t === 'dark') return true;
+    if (t === 'light') return false;
+    return !!(window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
+  }
+  function syncThemeSwitch() {
+    const ts = document.getElementById('theme-toggle');
+    if (ts) ts.setAttribute('aria-checked', String(isDarkNow()));
+  }
+  function setTheme(t) {
+    if (!D()) return;
+    D().settings.theme = t;
+    save();
+    applyTheme();
+    if (state.view === 'settings') render(); // pilihan "Tampilan" di Pengaturan ikut berubah
   }
 
   /* ---------- Data helpers ---------- */
@@ -1415,6 +1434,23 @@ window.Tamu = window.Tamu || {};
     });
     window.addEventListener('pagehide', () => Store.flush());
     window.addEventListener('online', () => kmgSync(false));
+    // Sakelar terang/gelap di menu atas: ketuk untuk berganti, atau usap ke kanan (gelap) / kiri (terang)
+    const ts = document.getElementById('theme-toggle');
+    if (ts) {
+      let startX = null;
+      ts.addEventListener('pointerdown', (e) => { startX = e.clientX; });
+      ts.addEventListener('click', (e) => {
+        const dx = startX == null || !e.clientX ? 0 : e.clientX - startX;
+        startX = null;
+        const toDark = Math.abs(dx) > 12 ? dx > 0 : !isDarkNow();
+        setTheme(toDark ? 'dark' : 'light');
+      });
+    }
+    if (window.matchMedia) {
+      const mq = matchMedia('(prefers-color-scheme: dark)');
+      const onSys = () => syncThemeSwitch();
+      if (mq.addEventListener) mq.addEventListener('change', onSys); else if (mq.addListener) mq.addListener(onSys);
+    }
   }
 
   /** Splash logo saat aplikasi dibuka: tampil ±1,2 detik sejak halaman dimuat, lalu memudar. */
@@ -1432,7 +1468,7 @@ window.Tamu = window.Tamu || {};
   }
 
   function boot() {
-    T.VERSION = '1.9.0';
+    T.VERSION = '1.9.1';
     Store.load();
     applyTheme();
     bind();
