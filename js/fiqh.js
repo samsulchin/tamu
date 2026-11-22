@@ -160,10 +160,10 @@ window.Tamu = window.Tamu || {};
     });
   }
 
-  /** Koordinat untuk hitung offline: lokasi GPS (bila pernah diizinkan) atau kota cadangan. */
+  /** Koordinat untuk hitung offline: lokasi GPS, ibu kota kab/kota pilihan (Kemendagri), atau kota cadangan. */
   function coords(data) {
     const c = data.settings.coords;
-    if (c && isFinite(c.lat) && isFinite(c.lng)) return { lat: c.lat, lng: c.lng, name: 'lokasi GPS kamu' };
+    if (c && isFinite(c.lat) && isFinite(c.lng)) return { lat: c.lat, lng: c.lng, name: c.name || 'lokasi GPS kamu' };
     return T.Prayer.city(data.settings.city);
   }
 

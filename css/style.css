@@ -507,6 +507,11 @@ textarea { resize: vertical; }
 .install-steps li { margin: 6px 0; }
 .install-steps .ic { width: 16px; height: 16px; vertical-align: -3px; }
 
+/* ---------- Pilihan wilayah ---------- */
+.ob-sub { margin: 22px 0 2px; font-size: 1.05rem; }
+.wil select:disabled { opacity: .55; }
+.wil + .gps-btn { margin-top: 12px; }
+
 /* ---------- Footer hak cipta ---------- */
 .app-footer { text-align: center; color: var(--muted); font-size: .74rem; line-height: 1.5; padding: 18px 8px 8px; margin-top: 6px; border-top: 1px solid var(--line); }
 .app-footer p { margin: 0 0 4px; }

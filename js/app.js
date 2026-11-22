@@ -223,7 +223,7 @@ window.Tamu = window.Tamu || {};
     return [
       { key: 'cycle', done: !!su.cycle, title: 'Atur siklus & lama haid', desc: 'Berapa hari siklus dan haidmu biasanya.', act: 'cycle-setup', btn: 'Atur' },
       { key: 'haid', done: d.periods.length > 0, title: 'Isi data awal haid', desc: 'Kapan haid terakhirmu dimulai dan selesai.', act: 'init-open', btn: 'Isi' },
-      { key: 'lokasi', done: !!su.lokasi, title: 'Tentukan lokasi jadwal shalat', desc: 'Untuk jadwal shalat. Bisa pakai GPS.', act: 'go-fiqh', btn: 'Atur' },
+      { key: 'lokasi', done: !!su.lokasi, title: 'Tentukan lokasi jadwal shalat', desc: 'Pilih provinsi dan kab/kota, atau pakai GPS.', act: 'go-fiqh', btn: 'Atur' },
       { key: 'hijri', done: !!su.hijri, title: 'Pilih kalender Hijriah', desc: 'Kemenag atau Muhammadiyah.', act: 'hijri-setup', btn: 'Pilih' },
       { key: 'pin', done: Store.hasPin(), title: 'Kunci dengan PIN (opsional)', desc: 'Biar catatanmu tidak dibuka orang lain.', act: 'pin-set', btn: 'Aktifkan', optional: true },
     ];
@@ -514,12 +514,30 @@ window.Tamu = window.Tamu || {};
     return h;
   }
 
+  /* ---------- Pilihan wilayah Kemendagri: provinsi → kabupaten/kota ---------- */
+  const kabBase = (n) => n.replace(/^(Kabupaten|Kota)( Administrasi)?s+/, '');
+  function kabOptions(prov, kode) {
+    const kabs = prov ? T.Kemenag.kabOf(prov).slice().sort((a, b) => kabBase(a[1]).localeCompare(kabBase(b[1]), 'id')) : [];
+    return '<option value="">' + (prov ? 'Pilih kabupaten/kota' : 'Pilih provinsi dulu') + '</option>' +
+      kabs.map((k) => '<option value="' + k[0] + '"' + (k[0] === kode ? ' selected' : '') + '>' + esc(k[1]) + '</option>').join('');
+  }
+  function wilayahPicker(id, sel) {
+    const prov = (sel && sel.prov) || '';
+    const provs = ((T.WILAYAH && T.WILAYAH.prov) || []).slice().sort((a, b) => a[1].localeCompare(b[1], 'id'));
+    return '<div class="wil" data-wil="' + id + '">' +
+      '<label class="lbl" for="' + id + '-prov">Provinsi</label><select id="' + id + '-prov" data-wil-prov><option value="">Pilih provinsi</option>' +
+      provs.map((p) => '<option value="' + p[0] + '"' + (p[0] === prov ? ' selected' : '') + '>' + esc(p[1]) + '</option>').join('') + '</select>' +
+      '<label class="lbl" for="' + id + '-kab">Kabupaten / kota</label><select id="' + id + '-kab" data-wil-kab' + (prov ? '' : ' disabled') + '>' + kabOptions(prov, sel && sel.kode) + '</select></div>';
+  }
+  const wilayahSel = () => { const w = D().settings.wilayah; return w ? { prov: w.prov, kode: w.kode } : null; };
+
   /* ---------- Jadwal shalat (Kemenag / hitung offline) ---------- */
   function prayerCard(tt, c) {
     const s = D().settings;
     const kmg = s.jadwalSource === 'kemenag';
     const isOfficial = tt.src === 'kemenag';
     const jc = D().jadwal || {};
+    const gps = !!(s.coords && s.coords.src === 'gps');
     let status;
     if (isOfficial) status = '<p class="src ok">' + icon('check') + '<span>' + esc(T.Kemenag.label()) + '<small>Disimpan di perangkat, tetap tersedia saat offline.</small></span></p>';
     else if (kmg && s.kemenag) status = '<p class="src warn">' + icon('info') + '<span>' + esc(T.Kemenag.label()) + '<small>Jadwal Kemenag untuk ' + esc(s.kemenag.lokasi) + ' belum terunduh' + (jc.lastError ? ' (' + esc(jc.lastError) + ')' : navigator.onLine === false ? ' (sedang offline)' : '') + '. <button class="link" data-act="kmg-retry">Coba lagi</button></small></span></p>';
@@ -527,12 +545,11 @@ window.Tamu = window.Tamu || {};
     else status = '<p class="src">' + icon('info') + '<span>' + esc(T.Kemenag.label()) + '<small>Mode offline penuh: tidak ada koneksi internet sama sekali.</small></span></p>';
 
     return '<section class="card"><h3 class="card-t">Waktu shalat hari ini</h3><div class="pt">' + ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].map((k) => '<div><span>' + Prayer.NAMES[k] + '</span><b>' + U.fmtTime(tt[k]) + '</b></div>').join('') + '</div>' + status +
-      (kmg ? '<button class="btn btn-soft gps-btn" data-act="gps">' + icon('pin') + (s.coords ? 'Perbarui lokasi GPS' : 'Gunakan lokasi saya (GPS)') + '</button>' +
-        (s.coords ? '<p class="muted small">Lokasi GPS tersimpan di perangkat (±100 m)' + (s.kemenag && s.kemenag.km != null ? '. Titik acuan jadwal ' + esc(s.kemenag.lokasi) + ' berjarak ±' + s.kemenag.km + ' km dari kamu' : '') + '. <button class="link" data-act="gps-forget">Hapus lokasi</button></p>' : '<p class="muted small">Lokasi hanya dipakai di HP kamu untuk mencari kab/kota Kemenag terdekat. Yang dikirim tetap hanya ID kab/kota.</p>') +
-        '<label class="lbl" for="kmg-q">Atau cari kabupaten/kota (data Bimas Islam Kemenag)</label><form class="kmg-form" data-act="kmg-form"><input id="kmg-q" type="search" placeholder="' + esc(s.kemenag ? s.kemenag.lokasi : 'Cari, mis. Sleman') + '" autocomplete="off" maxlength="40"><button class="btn btn-soft">Cari</button></form><div id="kmg-res" class="kmg-res"></div>' : '') +
+      (kmg ? wilayahPicker('fq', wilayahSel()) + '<button class="btn btn-soft gps-btn" data-act="gps">' + icon('pin') + (gps ? 'Perbarui lokasi GPS' : 'Gunakan lokasi saya (GPS)') + '</button>' +
+        (gps ? '<p class="muted small">Lokasi GPS tersimpan di perangkat (±100 m)' + (s.kemenag && s.kemenag.km != null ? '. Titik acuan jadwal ' + esc(s.kemenag.lokasi) + ' berjarak ±' + s.kemenag.km + ' km dari kamu' : '') + '. <button class="link" data-act="gps-forget">Hapus lokasi</button></p>' : '<p class="muted small">Lokasi hanya dipakai di HP kamu untuk mencari kab/kota Kemenag terdekat. Yang dikirim tetap hanya ID kab/kota.</p>') : '') +
       '<details class="rules"><summary>Pengaturan jadwal</summary>' +
       '<label class="lbl" for="src-sel">Sumber jadwal</label><select id="src-sel" data-change="jadwalSource"><option value="kemenag"' + (kmg ? ' selected' : '') + '>Jadwal resmi Kemenag RI (perlu internet sesekali)</option><option value="hitung"' + (!kmg ? ' selected' : '') + '>Hitung di perangkat (offline penuh)</option></select>' +
-      '<label class="lbl" for="city-sel">Kota cadangan untuk hitung offline</label><select id="city-sel" data-change="city">' + Prayer.CITIES.map((x) => '<option value="' + x.id + '"' + (x.id === c.id ? ' selected' : '') + '>' + esc(x.name) + '</option>').join('') + '</select>' +
+      (kmg ? '<label class="lbl" for="kmg-q">Lokasi khusus (mis. pulau terpencil)</label><form class="kmg-form" data-act="kmg-form"><input id="kmg-q" type="search" placeholder="' + esc(s.kemenag ? s.kemenag.lokasi : 'Cari, mis. Sleman') + '" autocomplete="off" maxlength="40"><button class="btn btn-soft">Cari</button></form><div id="kmg-res" class="kmg-res"></div>' : '') +
       '<p class="muted small">Jadwal Kemenag diambil dari api.myquran.com, yang menyajikan data Bimas Islam Kemenag RI. <b>Yang dikirim hanya ID kab/kota dan bulan</b>, tidak ada data haid atau identitas. Hitungan offline memakai kriteria Kemenag (Subuh 20°, Isya 18°, Ashar Syafi\'i, ihtiyath 2 menit), tetapi tanpa koreksi ketinggian tempat, sehingga bisa selisih beberapa menit.</p></details></section>';
   }
   async function kmgSearch() {
@@ -803,8 +820,10 @@ window.Tamu = window.Tamu || {};
     }
     if (ob.step === 1) {
       return '<div class="ob form">' + dots + '<h2>Kenalan dulu</h2><label class="lbl" for="ob-name">Nama panggilan <small>(opsional, hanya untuk sapaan)</small></label><input id="ob-name" value="' + esc(s.name) + '" maxlength="30" placeholder="mis. Aisyah">' +
-        '<label class="lbl" for="ob-city">Kota terdekat <small>(untuk jadwal shalat; nanti bisa diganti ke kab/kotamu)</small></label><select id="ob-city">' + Prayer.CITIES.map((x) => '<option value="' + x.id + '"' + (x.id === s.city ? ' selected' : '') + '>' + esc(x.name) + '</option>').join('') + '</select>' +
-        '<p class="muted small">Tamu tidak meminta izin lokasi. Kota hanya disimpan di perangkat.</p><div class="ob-actions"><button class="btn btn-ghost" data-act="ob-back">Kembali</button><button class="btn btn-primary" data-act="ob-next">Lanjut</button></div></div>';
+        '<h3 class="ob-sub">Kamu tinggal di mana?</h3><p class="muted small">Untuk jadwal shalat. Daftar wilayah sesuai data Kemendagri.</p>' +
+        wilayahPicker('ob', ob.wil || wilayahSel()) +
+        '<button class="btn btn-ghost gps-btn" data-act="gps">' + icon('pin') + 'Pakai lokasi saya (GPS)</button>' +
+        '<p class="muted small">Lokasi hanya disimpan di HP-mu.</p><div class="ob-actions"><button class="btn btn-ghost" data-act="ob-back">Kembali</button><button class="btn btn-primary" data-act="ob-next">Lanjut</button></div></div>';
     }
     if (ob.step === 2) {
       ob.init = ob.init || initModel();
@@ -1020,7 +1039,11 @@ window.Tamu = window.Tamu || {};
 
   function obCollect() {
     const s = D().settings, ob = state.ob;
-    if (ob.step === 1) { s.name = val('ob-name').trim().slice(0, 30); s.city = val('ob-city') || s.city; markSetup('lokasi'); }
+    if (ob.step === 1) {
+      s.name = val('ob-name').trim().slice(0, 30);
+      ob.wil = { prov: val('ob-prov'), kode: val('ob-kab') };
+      if (ob.wil.kode) { T.Kemenag.applyWilayah(ob.wil.kode); markSetup('lokasi'); }
+    }
     if (ob.step === 2 && ob.init) {
       initCollect(ob.init);
       s.cycleLen = U.clamp(ob.init.cl || 28, 18, 60);
@@ -1226,7 +1249,8 @@ window.Tamu = window.Tamu || {};
     'kmg-pick': (el) => {
       const s = D().settings;
       s.kemenag = { id: el.dataset.id, lokasi: el.dataset.lokasi, daerah: '' };
-      s.coords = null; // dipilih manual: hitungan cadangan memakai kota, bukan GPS lama
+      s.coords = null; // lokasi khusus dari pencarian: hitungan cadangan memakai kota terdekat
+      s.wilayah = null;
       markSetup('lokasi');
       const fb = T.Kemenag.matchFallback(el.dataset.lokasi);
       if (fb) s.city = fb;
@@ -1249,6 +1273,7 @@ window.Tamu = window.Tamu || {};
     'setup-dismiss': () => { markSetup('dismissed'); save(); render(); toast('Panduan disembunyikan. Semua pengaturan tetap ada di menu ⚙.'); },
     gps: async (el) => {
       el.disabled = true;
+      if (!D().settings.onboarded) { D().settings.name = val('ob-name').trim().slice(0, 30); state.ob.wil = null; }
       toast('Mencari lokasi…');
       try {
         const r = await T.Kemenag.useGPS();
@@ -1341,6 +1366,21 @@ window.Tamu = window.Tamu || {};
       if (f.dataset.act === 'kmg-form') kmgSearch();
     });
     document.addEventListener('change', (ev) => {
+      const wil = ev.target.closest && ev.target.closest('[data-wil]');
+      if (wil) {
+        if (ev.target.hasAttribute('data-wil-prov')) {
+          const kab = wil.querySelector('[data-wil-kab]');
+          kab.innerHTML = kabOptions(ev.target.value, null);
+          kab.disabled = !ev.target.value;
+          if (ev.target.value) kab.focus();
+        } else if (ev.target.hasAttribute('data-wil-kab') && ev.target.value && wil.dataset.wil === 'fq') {
+          const k = T.Kemenag.applyWilayah(ev.target.value);
+          markSetup('lokasi'); save(); render();
+          toast('Lokasi: ' + k[1] + '. Mengunduh jadwal Kemenag…');
+          kmgSync(true);
+        }
+        return;
+      }
       if (ev.target.closest && ev.target.closest('#in-form')) {
         if (['in-cl', 'in-pl'].includes(ev.target.id)) { const m = currentInit(); if (m) m.clTouched = true; }
         refreshInit();
@@ -1392,7 +1432,7 @@ window.Tamu = window.Tamu || {};
   }
 
   function boot() {
-    T.VERSION = '1.8.2';
+    T.VERSION = '1.9.0';
     Store.load();
     applyTheme();
     bind();

@@ -180,33 +180,40 @@ window.Tamu = window.Tamu || {};
     const t = lookup(date || new Date());
     const s = settings();
     if (t) return 'Jadwal resmi Kemenag RI · ' + (T.Store.data.jadwal.lokasi || s.kemenag.lokasi);
-    return 'Dihitung offline untuk ' + (s.coords ? 'lokasi GPS kamu' : T.Prayer.city(s.city).name) + ' (metode Kemenag)';
+    return 'Dihitung offline untuk ' + (s.coords ? (s.coords.name || 'lokasi GPS kamu') : T.Prayer.city(s.city).name) + ' (metode Kemenag)';
   }
 
-  /* ---------- GPS → kab/kota Kemenag terdekat (dicocokkan di perangkat; koordinat tidak dikirim) ---------- */
-  let kotaLoading = null;
-  function loadKota() {
-    if (T.KOTA) return Promise.resolve(true);
-    if (kotaLoading) return kotaLoading;
-    kotaLoading = new Promise((resolve) => {
-      const s = document.createElement('script');
-      s.src = 'data/kota.js';
-      s.onload = () => resolve(!!T.KOTA);
-      s.onerror = () => { kotaLoading = null; resolve(false); };
-      document.head.appendChild(s);
-    });
-    return kotaLoading;
+  /* ---------- Wilayah Kemendagri (data/wilayah.js): provinsi → kab/kota, dengan ID jadwal Kemenag ----------
+   * Baris kab/kota: [kode, nama, ibukota, lat, lng, ketinggian, zonaWaktu, idKemenag] */
+  const W = () => T.WILAYAH || { prov: [], kab: [] };
+  function provName(kode) { const p = W().prov.find((x) => x[0] === String(kode).slice(0, 2)); return p ? p[1] : ''; }
+  function kabByKode(kode) { return W().kab.find((x) => x[0] === kode) || null; }
+  function kabOf(provKode) { return W().kab.filter((x) => x[0].slice(0, 2) === provKode); }
+
+  /** Terapkan pilihan kab/kota: koordinat ibu kotanya untuk hitung offline + ID jadwal Kemenag. */
+  function applyWilayah(kode) {
+    const k = kabByKode(kode);
+    if (!k) return null;
+    const s = settings();
+    s.wilayah = { kode: k[0], nama: k[1], prov: k[0].slice(0, 2) };
+    s.coords = { lat: k[3], lng: k[4], elv: k[5], name: k[1], src: 'wilayah' };
+    s.city = nearestCity(k[3], k[4]) || s.city;
+    if (k[7]) { s.kemenag = { id: String(k[7]), lokasi: k[1], daerah: provName(k[0]) }; s.jadwalSource = 'kemenag'; }
+    T.Store.save();
+    return k;
   }
+
+  /* ---------- GPS → kab/kota terdekat (dicocokkan di perangkat; koordinat tidak dikirim) ---------- */
   function distKm(lat1, lng1, lat2, lng2) {
     const r = Math.PI / 180, dLat = (lat2 - lat1) * r, dLng = (lng2 - lng1) * r;
     const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * r) * Math.cos(lat2 * r) * Math.sin(dLng / 2) ** 2;
     return 12742 * Math.asin(Math.sqrt(a));
   }
-  function nearestKota(lat, lng) {
+  function nearestKab(lat, lng) {
     let best = null;
-    for (const [id, lokasi, la, lo] of T.KOTA || []) {
-      const km = distKm(lat, lng, la, lo);
-      if (!best || km < best.km) best = { id, lokasi, km };
+    for (const k of W().kab) {
+      const km = distKm(lat, lng, k[3], k[4]);
+      if (!best || km < best.km) best = { kode: k[0], nama: k[1], id: k[7] ? String(k[7]) : null, km };
     }
     return best;
   }
@@ -230,20 +237,30 @@ window.Tamu = window.Tamu || {};
     const c = await getPosition();
     const lat = +c.latitude.toFixed(3), lng = +c.longitude.toFixed(3);
     const s = settings();
-    s.coords = { lat, lng, at: new Date().toISOString() };
+    s.coords = { lat, lng, name: 'lokasi GPS kamu', src: 'gps', at: new Date().toISOString() };
     s.city = nearestCity(lat, lng) || s.city;
-    const ok = await loadKota();
-    const near = ok ? nearestKota(lat, lng) : null;
-    if (near && near.km <= 150) {
-      if (!s.kemenag || s.kemenag.id !== near.id) s.kemenag = { id: near.id, lokasi: near.lokasi, daerah: '' };
-      s.kemenag.km = Math.round(near.km);
-      s.jadwalSource = 'kemenag';
+    const near = nearestKab(lat, lng);
+    const inIndonesia = near && near.km <= 150;
+    if (inIndonesia) {
+      s.wilayah = { kode: near.kode, nama: near.nama, prov: near.kode.slice(0, 2) };
+      if (near.id) {
+        if (!s.kemenag || s.kemenag.id !== near.id) s.kemenag = { id: near.id, lokasi: near.nama, daerah: provName(near.kode) };
+        s.kemenag.km = Math.round(near.km);
+        s.jadwalSource = 'kemenag';
+      }
     }
     T.Store.save();
-    return { lat, lng, near: near && near.km <= 150 ? near : null, accuracy: Math.round(c.accuracy || 0) };
+    return { lat, lng, near: inIndonesia ? { lokasi: near.nama, km: near.km } : null, accuracy: Math.round(c.accuracy || 0) };
   }
-  function forgetGPS() { const s = settings(); s.coords = null; if (s.kemenag) delete s.kemenag.km; T.Store.save(); }
+  /** Hapus lokasi GPS: kembali ke koordinat ibu kota kab/kota yang dipilih (bila ada). */
+  function forgetGPS() {
+    const s = settings();
+    if (s.kemenag) delete s.kemenag.km;
+    const k = s.wilayah && kabByKode(s.wilayah.kode);
+    s.coords = k ? { lat: k[3], lng: k[4], elv: k[5], name: k[1], src: 'wilayah' } : null;
+    T.Store.save();
+  }
 
-  T.Kemenag = { search, ensure, sync, lookup, label, offsetOf, matchFallback, active, useGPS, forgetGPS, nearestKota, loadKota };
+  T.Kemenag = { search, ensure, sync, lookup, label, offsetOf, matchFallback, active, useGPS, forgetGPS, applyWilayah, provName, kabOf, kabByKode, nearestKab };
   T.Prayer.setSource(lookup);
 })(window.Tamu);

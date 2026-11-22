@@ -2,10 +2,10 @@
  * Strategi network-first: bila online, selalu ambil versi terbaru (maks. 3 detik), lalu simpan ke cache;
  * bila offline atau lambat, pakai cache. Tidak ada data pengguna yang lewat sini.
  */
-const CACHE = 'tamu-v1.8.2';
+const CACHE = 'tamu-v1.9.0';
 const FILES = [
   './', './index.html', './manifest.webmanifest', './css/style.css',
-  './js/util.js', './js/store.js', './js/prayer.js', './js/kemenag.js', './js/cycle.js', './js/fiqh.js', './js/content.js', './js/qa.js', './js/kitab.js', './js/app.js', './data/kitab.js', './data/hijri.js', './data/kota.js',
+  './js/util.js', './js/store.js', './js/prayer.js', './js/kemenag.js', './js/cycle.js', './js/fiqh.js', './js/content.js', './js/qa.js', './js/kitab.js', './js/app.js', './data/kitab.js', './data/hijri.js', './data/wilayah.js',
   './assets/logo.svg', './assets/fonts/plus-jakarta-sans-latin.woff2', './assets/fonts/plus-jakarta-sans-latin-ext.woff2', './assets/icon-192.png', './assets/icon-512.png', './assets/icon-maskable-512.png',
 ];
 

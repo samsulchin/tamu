@@ -32,6 +32,12 @@ Tamu lahir dari keresahan bahwa aplikasi haid populer menyimpan data paling prib
 
 Skrip build memvalidasi hasilnya terhadap 16 tanggal resmi (Ramadhan/Syawal 1444–1447 H versi pemerintah dan Muhammadiyah, serta 1 Muharram 1447 H KHGT). **Semua cocok.** Contohnya 1 Ramadhan 1447: pemerintah 19 Feb 2026, Muhammadiyah 18 Feb 2026.
 
+### Wilayah (provinsi → kabupaten/kota)
+
+`data/wilayah.js` (dibangun `node tools/build-wilayah.js`) berisi **38 provinsi dan 514 kab/kota** sesuai **Kepmendagri No 300.2.2-2430 Tahun 2025**, diambil dari [cahyadsn/wilayah](https://github.com/cahyadsn/wilayah) (MIT). Setiap kab/kota memuat koordinat ibu kota, ketinggian, zona waktu, dan ID jadwal shalat Kemenag. Ke-514 ID itu dicocokkan berdasarkan nama, dengan padanan untuk nama yang berubah (mis. Toba ↔ Toba Samosir, Kepulauan Tanimbar ↔ Maluku Tenggara Barat, lima kota Jakarta ↔ KOTA JAKARTA). Salinan ringkas sumbernya (tanpa batas wilayah) ada di `tools/data/kemendagri/`.
+
+Dipakai di halaman "Kenalan dulu" dan kartu jadwal shalat: pilih provinsi, lalu kabupaten/kota, atau pakai GPS.
+
 ### Lokasi GPS
 
 `data/kota.js` (dibangun `node tools/build-kota.js`) memetakan 513 kab/kota jadwal Kemenag ke koordinat pusatnya ([ArrayAccess/Indonesia-Postal-And-Area](https://github.com/ArrayAccess/Indonesia-Postal-And-Area), MIT; salinan sumber ada di `tools/data/arrayaccess/` karena repo asalnya berencana dihapus). Saat pengguna menekan "Gunakan lokasi saya":
@@ -131,7 +137,8 @@ Konten pihak ketiga mengikuti lisensinya masing-masing dan **tidak** termasuk kl
 | Konten | Sumber | Lisensi |
 |---|---|---|
 | Kutipan kitab (`data/kitab.js`, `data/kitab.json`) | OpenITI | CC BY-NC-SA 4.0. Turunan berupa pustaka kutipan ini dibagikan dengan lisensi yang sama, non-komersial |
-| Koordinat kab/kota (`data/kota.js`, `tools/data/arrayaccess/`) | ArrayAccess/Indonesia-Postal-And-Area | MIT |
+| Wilayah Kemendagri (`data/wilayah.js`, `tools/data/kemendagri/`) | cahyadsn/wilayah | MIT |
+| Koordinat kab/kota untuk pencocokan ID Kemenag (`data/kota.js`, `tools/data/arrayaccess/`) | ArrayAccess/Indonesia-Postal-And-Area | MIT |
 | Perhitungan tabel Hijriah (saat build) | astronomy-engine | MIT |
 | Font antarmuka (`assets/fonts/`) | Plus Jakarta Sans (Tokotype) | SIL Open Font License 1.1 (`assets/fonts/OFL.txt`) |
 
