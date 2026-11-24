@@ -34,7 +34,9 @@
   --ph-foli: #2FA58A;
   --ph-ovu: #E3A12F;
   --ph-lute: #8E6CC8;
-  --late: #D9B8C6;
+  --late: #E26D3D;            /* haid terlambat: oranye bata, beda dari kuning ovulasi */
+  --late-soft: #FDE8DD;
+  --late-ink: #A8431A;
   /* alias nama lama */
   --pink: var(--accent); --pink-strong: var(--accent-strong); --pink-soft: var(--accent-soft);
   --shadow: none;
@@ -48,7 +50,7 @@
     --bg: #171013; --surface: #221920; --surface-2: #2B1F27; --text: #F7E9EF; --muted: #BCA6B1; --line: #3A2B33; --track: #33252D;
     --accent: #F27AA6; --accent-strong: #F590B5; --accent-soft: #43202F; --fill: #C23A6F; --haid: #D24545; --haid-soft: #3F1C1E; --nifas: #C23A6F;
     --green: #5CC79A; --green-soft: #173229; --amber: #F0B95A; --amber-soft: #3A2B12; --danger: #FF7D8E;
-    --ph-mens: #EF5B5B; --ph-foli: #4CC3A5; --ph-ovu: #F0B95A; --ph-lute: #AE90E6; --late: #5A4450;
+    --ph-mens: #EF5B5B; --ph-foli: #4CC3A5; --ph-ovu: #F0B95A; --ph-lute: #AE90E6; --late: #F08A5D; --late-soft: #3E2318; --late-ink: #F5A47F;
     color-scheme: dark;
   }
 }
@@ -56,7 +58,7 @@
   --bg: #171013; --surface: #221920; --surface-2: #2B1F27; --text: #F7E9EF; --muted: #BCA6B1; --line: #3A2B33; --track: #33252D;
     --accent: #F27AA6; --accent-strong: #F590B5; --accent-soft: #43202F; --fill: #C23A6F; --haid: #D24545; --haid-soft: #3F1C1E; --nifas: #C23A6F;
     --green: #5CC79A; --green-soft: #173229; --amber: #F0B95A; --amber-soft: #3A2B12; --danger: #FF7D8E;
-    --ph-mens: #EF5B5B; --ph-foli: #4CC3A5; --ph-ovu: #F0B95A; --ph-lute: #AE90E6; --late: #5A4450;
+    --ph-mens: #EF5B5B; --ph-foli: #4CC3A5; --ph-ovu: #F0B95A; --ph-lute: #AE90E6; --late: #F08A5D; --late-soft: #3E2318; --late-ink: #F5A47F;
   color-scheme: dark;
 }
 
@@ -162,7 +164,7 @@ body.bare .app { padding-bottom: 0; }
 .legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 14px; font-size: .8rem; color: var(--muted); }
 .legend span { display: inline-flex; align-items: center; gap: 6px; }
 .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-.ph-mens { background: var(--ph-mens); } .ph-foli { background: var(--ph-foli); } .ph-ovu { background: var(--ph-ovu); } .ph-lute { background: var(--ph-lute); }
+.ph-mens { background: var(--ph-mens); } .ph-foli { background: var(--ph-foli); } .ph-ovu { background: var(--ph-ovu); } .ph-lute { background: var(--ph-lute); } .ph-late { background: var(--late); }
 .empty { text-align: center; padding: 28px 20px; }
 .empty img { border-radius: 18px; margin-bottom: 8px; }
 
@@ -185,7 +187,7 @@ body.bare .app { padding-bottom: 0; }
 .rules ul { font-size: .9rem; }
 .rules-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
 
-.phase-tag.ph-ovu { color: #3A2600; }
+.phase-tag.ph-ovu { color: #3A2600; } .phase-tag.ph-late { color: #2A1206; }
 .phase-tag { display: inline-block; color: #fff; font-weight: 600; font-size: .82rem; padding: 3px 10px; border-radius: 6px; margin-bottom: 10px; }
 .phase ul { font-size: .9rem; }
 .ibadah { display: flex; gap: 8px; background: var(--green-soft); padding: 10px 12px; border-radius: 12px; font-size: .9rem; margin: 6px 0 0; }
@@ -194,6 +196,9 @@ body.bare .app { padding-bottom: 0; }
 .pred div { background: var(--surface-2); border-radius: 14px; padding: 10px 12px; display: flex; flex-direction: column; }
 .pred .k { font-size: .76rem; color: var(--muted); }
 .pred .v { font-weight: 700; }
+.pred small { font-size: .74rem; margin-top: 2px; }
+.pred .wide { grid-column: 1 / -1; }
+.pred .pred-late { background: var(--late-soft); } .pred .pred-late .v { color: var(--late-ink); }
 .log-cta { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .log-cta p { margin: 0; font-size: .9rem; }
 
@@ -217,7 +222,8 @@ body.bare .app { padding-bottom: 0; }
 .cell.is-pred { box-shadow: inset 0 0 0 2px var(--haid); border-radius: 12px; background: var(--haid-soft); }
 .cell.is-haid-pred { background: color-mix(in srgb, var(--haid) 55%, var(--surface)); color: #fff; }
 .cell.is-haid-pred .hj { color: rgba(255, 255, 255, .85); }
-.cell.is-late { background: var(--amber-soft); border: 2px dashed var(--amber); }
+.cell.is-late { background: var(--late-soft); border: 2px dashed var(--late); }
+.cell.is-pred-late { background: var(--haid-soft); border: 2px dashed var(--late); box-shadow: inset 0 0 0 2px var(--haid); border-radius: 12px; }
 .cell.is-fertile { background: var(--green-soft); }
 .cell.is-ovu::after { content: ""; position: absolute; inset: 3px; border-radius: 10px; border: 2px solid var(--ph-foli); }
 .cell.is-today .n { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
@@ -225,7 +231,7 @@ body.bare .app { padding-bottom: 0; }
 .logdot { position: absolute; bottom: 4px; width: 4px; height: 4px; border-radius: 50%; background: currentColor; opacity: .7; }
 .cal-legend { margin-top: 12px; }
 .sw { width: 14px; height: 14px; border-radius: 5px; display: inline-block; }
-.sw-haid { background: var(--haid); } .sw-nifas { background: var(--nifas); } .sw-pred { background: var(--haid-soft); box-shadow: inset 0 0 0 2px var(--haid); } .sw-haid-pred { background: color-mix(in srgb, var(--haid) 55%, var(--surface)); } .sw-late { background: var(--amber-soft); outline: 2px dashed var(--amber); outline-offset: -2px; }
+.sw-haid { background: var(--haid); } .sw-nifas { background: var(--nifas); } .sw-pred { background: var(--haid-soft); box-shadow: inset 0 0 0 2px var(--haid); } .sw-haid-pred { background: color-mix(in srgb, var(--haid) 55%, var(--surface)); } .sw-late { background: var(--late-soft); outline: 2px dashed var(--late); outline-offset: -2px; } .sw-pred-late { background: var(--haid-soft); box-shadow: inset 0 0 0 2px var(--haid); outline: 2px dashed var(--late); outline-offset: 0; }
 .sw-fertile { background: var(--green-soft); } .sw-ovu { box-shadow: inset 0 0 0 2px var(--ph-foli); }
 .day-status { display: flex; gap: 10px; align-items: flex-start; border-radius: 14px; padding: 10px 12px; margin: 0 0 10px; background: var(--surface-2); }
 .day-status > div { flex: 1; display: flex; flex-direction: column; gap: 2px; }
@@ -234,14 +240,15 @@ body.bare .app { padding-bottom: 0; }
 .ds-haid { background: var(--haid-soft); } .ds-haid > .ic, .ds-haid b:first-child { color: var(--haid); }
 .ds-nifas { background: var(--pink-soft); } .ds-nifas > .ic, .ds-nifas b:first-child { color: var(--nifas); }
 .ds-pred { box-shadow: inset 0 0 0 1.5px var(--haid); background: var(--haid-soft); } .ds-pred > .ic { color: var(--haid); }
-.ds-late { background: var(--amber-soft); } .ds-late > .ic { color: var(--amber); }
+.ds-late { background: var(--late-soft); } .ds-late > .ic, .ds-late b:first-child { color: var(--late-ink); }
+.ds-pred-late { box-shadow: inset 0 0 0 1.5px var(--late); background: var(--haid-soft); } .ds-pred-late > .ic { color: var(--haid); }
 .ds-fertile { background: var(--green-soft); } .ds-fertile > .ic { color: var(--green); }
 .cal-src { margin: 10px 0 0; text-align: center; }
 .gps-btn { width: 100%; margin-top: 10px; }
 .day-head { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; margin-bottom: 10px; }
 .tags { display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; }
 .tag { font-size: .72rem; font-weight: 700; padding: 3px 8px; border-radius: 999px; }
-.tag-pink { background: var(--fill); color: #fff; } .tag-haid { background: var(--haid); color: #fff; } .tag-nifas { background: var(--nifas); color: #fff; } .tag-late { background: var(--amber-soft); color: var(--amber); } .tag-green { background: var(--green-soft); color: var(--green); } .tag-line { box-shadow: inset 0 0 0 1.5px var(--haid); color: var(--haid); }
+.tag-pink { background: var(--fill); color: #fff; } .tag-haid { background: var(--haid); color: #fff; } .tag-nifas { background: var(--nifas); color: #fff; } .tag-late { background: var(--late-soft); color: var(--late-ink); } .tag-green { background: var(--green-soft); color: var(--green); } .tag-line { box-shadow: inset 0 0 0 1.5px var(--haid); color: var(--haid); }
 .hist { list-style: none; padding: 0; margin: 0; }
 .hist li { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 0; border-top: 1px solid var(--line); }
 .hist li:first-child { border-top: 0; }

@@ -38,7 +38,8 @@ window.Tamu = window.Tamu || {};
     const recent = cycles.slice(-6);
     const durs = sorted(data.periods, 'haid')
       .filter((p) => { const d = p.end && new Date(p.end) - new Date(p.start); return d && d >= U.DAY && d <= 15 * U.DAY; })
-      .map((p) => Math.ceil((new Date(p.end) - new Date(p.start)) / U.DAY))
+      // Lama haid dihitung per tanggal kalender (mulai tgl 1 jam 20.00, selesai tgl 7 = 7 hari), sama seperti yang diwarnai di kalender
+      .map((p) => U.diffDays(p.end, p.start) + 1)
       .slice(-6);
     // Rata-rata berbobot: siklus yang lebih baru lebih berpengaruh (bobot 1, 2, 3, …)
     const wavg = (arr) => { let sw = 0, sx = 0; arr.forEach((x, i) => { sw += i + 1; sx += x * (i + 1); }); return sx / sw; };
@@ -80,16 +81,29 @@ window.Tamu = window.Tamu || {};
     return base + ' (dari pengaturan; akan menyesuaikan otomatis setelah ada haid yang tercatat lengkap)';
   }
 
+  /** Fase pada hari ke-`day` siklus. Lewat dari perkiraan haid = 'terlambat', bukan luteal yang memanjang
+   *  (fase luteal relatif tetap ±14 hari; bila haid belum datang, ovulasinya yang mundur, bukan lutealnya yang panjang). */
   function phaseOf(day, o) {
     if (o.ongoing || day <= o.periodDays) return 'menstruasi';
+    if (o.late) return 'terlambat';
     if (day < o.ovuDay - 1) return 'folikular';
     if (day <= o.ovuDay + 1) return 'ovulasi';
     return 'luteal';
   }
 
-  /** Kondisi siklus saat ini. null bila belum ada data. */
+  /** Jendela subur satu siklus yang dimulai `cs`: 5 hari sebelum ovulasi s.d. 1 hari sesudahnya,
+   *  tetapi tidak pernah menumpuk dengan hari haid siklus itu sendiri. */
+  function fertileOf(cs, ovuDay, haidDays) {
+    const ovu = U.addDays(cs, ovuDay - 1);
+    const a = U.addDays(cs, Math.max(ovuDay - 6, haidDays));
+    return { ovu, fertile: [a <= ovu ? a : ovu, U.addDays(ovu, 1)] };
+  }
+
+  /** Kondisi siklus saat ini. null bila belum ada data.
+   *  `plan` adalah satu-satunya sumber jadwal (haid berikutnya, masa subur, ovulasi): beranda dan kalender sama-sama membacanya. */
   function current(data, now) {
     now = now || new Date();
+    const today = U.sod(now);
     const all = sorted(data.periods).filter((p) => new Date(p.start) <= now);
     const last = all[all.length - 1];
     if (!last) return null;
@@ -103,25 +117,38 @@ window.Tamu = window.Tamu || {};
     const lastHaid = sorted(all, 'haid').pop();
     const ongoing = !lastHaid.end;
     const L = st.avgCycle;
+    const P = Math.min(st.avgPeriod, L - 1);
     const luteal = U.clamp(data.settings.lutealLen || 14, 10, 16);
-    const ovuDay = Math.max(L - luteal, 6);
-    const cycleDay = U.diffDays(now, cycleStart) + 1;
-    const periodDays = ongoing ? cycleDay : U.diffDays(lastHaid.end, cycleStart) + 1;
+    const cycleDay = U.diffDays(today, cycleStart) + 1;
+    const periodDays = ongoing ? Math.max(cycleDay, P) : U.diffDays(lastHaid.end, cycleStart) + 1;
+    // Ovulasi ±14 hari sebelum haid berikutnya, minimal sehari setelah haid selesai
+    const ovuDay = Math.max(L - luteal, P + 2);
     const nextStart = U.addDays(cycleStart, L);
-    const spread = st.source !== 'manual' && st.count >= 3 ? [st.minCycle, st.maxCycle] : [L - 2, L + 2];
-    const nextRange = [U.addDays(cycleStart, Math.min(spread[0], L)), U.addDays(cycleStart, Math.max(spread[1], L))];
-    const ovulation = U.addDays(cycleStart, ovuDay - 1);
-    const daysToNext = U.diffDays(nextStart, now);
+    const daysToNext = U.diffDays(nextStart, today);
     const lateDays = ongoing ? 0 : Math.max(0, -daysToNext);
+    const late = lateDays > 0;
     // Bila terlambat, perkiraan haid bergeser: kemungkinan datang mulai besok
-    const predNext = lateDays > 0 ? U.addDays(U.sod(now), 1) : nextStart;
+    const predNext = late ? U.addDays(today, 1) : nextStart;
+    const spread = st.source !== 'manual' && st.count >= 3 ? [Math.min(st.minCycle, L), Math.max(st.maxCycle, L)] : [L - 2, L + 2];
+    const nextRange = late
+      ? [predNext, U.addDays(predNext, Math.max(2, spread[1] - spread[0]))]
+      : [U.addDays(cycleStart, spread[0]), U.addDays(cycleStart, spread[1])];
+
+    // Jadwal: siklus sekarang (k=0) lalu 4 siklus berikutnya dari perkiraan haid (yang bergeser bila terlambat)
+    const plan = [];
+    for (let k = 0; k <= 4; k++) {
+      const start = k === 0 ? cycleStart : U.addDays(predNext, L * (k - 1));
+      const f = fertileOf(start, ovuDay, k === 0 ? periodDays : P);
+      plan.push({ k, start, haidDays: k === 0 ? periodDays : P, ovu: f.ovu, fertile: f.fertile, skipFertile: k === 0 && late, late: k === 1 && late });
+    }
+    // Masa subur yang ditampilkan di Perkiraan: yang sedang berjalan atau yang terdekat ke depan
+    const up = plan.find((c) => !c.skipFertile && c.fertile[1] >= today) || plan[1];
     return {
       mode: 'cycle', last: lastHaid, cycleStart, ongoing, cycleDay, L, ovuDay, periodDays, st,
-      phase: phaseOf(cycleDay, { ongoing, periodDays, ovuDay }),
-      nextStart, predNext, nextRange: lateDays > 0 ? [predNext, U.addDays(predNext, Math.max(2, spread[1] - spread[0]))] : nextRange, ovulation,
-      fertile: [U.addDays(ovulation, -5), U.addDays(ovulation, 1)],
-      daysToNext,
-      lateDays,
+      phase: phaseOf(cycleDay, { ongoing, periodDays, ovuDay, late }),
+      nextStart, predNext, nextRange, plan,
+      ovulation: up.ovu, fertile: up.fertile,
+      daysToNext, lateDays, late,
     };
   }
 
@@ -131,7 +158,7 @@ window.Tamu = window.Tamu || {};
     const m = {};
     const mark = (d, k, v) => { const key = U.ymd(d); (m[key] || (m[key] = {}))[k] = v === undefined ? true : v; };
     const st = stats(data);
-    const today0 = U.sod(now);
+    const today = U.sod(now);
     for (const p of data.periods) {
       const s = U.sod(p.start);
       const e = U.sod(p.end || now);
@@ -140,23 +167,19 @@ window.Tamu = window.Tamu || {};
       // Haid yang sedang berlangsung: tandai sisa harinya sesuai kebiasaan lama haid (mis. mulai 21, kebiasaan 7 hari → s.d. 27)
       if (p.kind === 'haid' && !p.end) {
         const expEnd = U.addDays(s, st.avgPeriod - 1);
-        for (let d = U.addDays(today0, 1); d <= expEnd; d = U.addDays(d, 1)) mark(d, 'haidPred', U.diffDays(d, s) + 1);
+        for (let d = U.addDays(today, 1); d <= expEnd; d = U.addDays(d, 1)) mark(d, 'haidPred', U.diffDays(d, s) + 1);
       }
     }
     for (const k in data.logs) (m[k] || (m[k] = {})).log = true;
     const cur = current(data, now);
     if (cur && cur.mode === 'cycle') {
-      const today = U.sod(now);
-      // hari-hari keterlambatan: dari perkiraan semula sampai hari ini
-      if (cur.lateDays > 0) for (let d = U.sod(cur.nextStart), n = 1; d <= today; d = U.addDays(d, 1), n++) mark(d, 'late', n);
-      for (let k = 0; k < 4; k++) {
-        // siklus saat ini dimulai dari haid terakhir; siklus berikutnya dari perkiraan (bergeser bila terlambat)
-        const cs = k === 0 ? cur.cycleStart : U.addDays(cur.predNext, cur.L * (k - 1));
-        if (k > 0) for (let i = 0; i < cur.st.avgPeriod; i++) mark(U.addDays(cs, i), 'pred', k === 1 && cur.lateDays > 0 ? 'late' : true);
-        if (k === 0 && cur.lateDays > 0) continue; // masa subur siklus yang terlambat sudah lewat
-        const ov = U.addDays(cs, cur.ovuDay - 1);
-        for (let i = -5; i <= 1; i++) mark(U.addDays(ov, i), 'fertile');
-        mark(ov, 'ovu');
+      // Hari keterlambatan: dari tanggal perkiraan semula (telat 0 hari) sampai hari ini (telat = lateDays)
+      if (cur.late) for (let d = U.sod(cur.nextStart); d <= today; d = U.addDays(d, 1)) mark(d, 'late', { n: U.diffDays(d, cur.nextStart) });
+      for (const c of cur.plan) {
+        if (c.k > 0) for (let i = 0; i < c.haidDays; i++) mark(U.addDays(c.start, i), 'pred', c.late ? 'late' : true);
+        if (c.skipFertile) continue; // masa subur siklus yang terlambat sudah lewat
+        for (let d = U.sod(c.fertile[0]); d <= c.fertile[1]; d = U.addDays(d, 1)) mark(d, 'fertile');
+        mark(c.ovu, 'ovu');
       }
     }
     return m;

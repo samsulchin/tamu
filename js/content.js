@@ -40,6 +40,16 @@ window.Tamu = window.Tamu || {};
     },
   };
 
+  /** Bukan fase biologis tersendiri: dipakai saat haid melewati perkiraan, agar fase luteal tidak tampak memanjang terus. */
+  const PHASE_LATE = {
+    name: 'Terlambat', tag: 'Haid belum datang', color: 'late',
+    short: 'Haid sudah melewati tanggal perkiraan. Kemungkinan besar ovulasi siklus ini datang lebih lambat, sehingga haid ikut mundur.',
+    hormon: 'Fase luteal umumnya tetap sekitar 14 hari. Yang bergeser biasanya waktu ovulasi, misalnya karena stres, kurang tidur, sakit, perubahan berat badan, atau kehamilan.',
+    tubuh: ['Gejala PMS bisa datang dan pergi', 'Perut terasa kencang atau kembung', 'Cemas karena menunggu'],
+    tips: ['Telat beberapa hari masih wajar', 'Bila telat 7 hari atau lebih dan ada kemungkinan hamil, lakukan test pack', 'Bila sering telat jauh atau tidak haid 3 bulan, periksakan ke dokter atau bidan'],
+    ibadah: 'Selama darah belum keluar, kamu dalam keadaan suci: tetap shalat dan puasa seperti biasa.',
+  };
+
   const CATS = [
     { id: 'siklus', name: 'Siklus & Kesehatan' },
     { id: 'fikih', name: 'Fikih Haid' },
@@ -353,5 +363,5 @@ window.Tamu = window.Tamu || {};
   };
   QA.forEach((x) => { if (MZ[x.q]) x.mz = MZ[x.q]; });
 
-  T.Content = { PHASES, CATS, ARTICLES, QA };
+  T.Content = { PHASES, PHASE_LATE, CATS, ARTICLES, QA };
 })(window.Tamu);

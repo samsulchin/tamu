@@ -108,7 +108,7 @@ window.Tamu = window.Tamu || {};
     const e = end || new Date(8.64e15);
     return D().periods.some((p) => p.id !== exceptId && new Date(p.start) < e && (p.end ? new Date(p.end) : new Date(8.64e15)) > start);
   }
-  const phaseInfo = (k) => Content.PHASES[k];
+  const phaseInfo = (k) => (k === 'terlambat' ? Content.PHASE_LATE : Content.PHASES[k]);
 
   /* ---------- Komponen ---------- */
   function ring(cur) {
@@ -122,11 +122,11 @@ window.Tamu = window.Tamu || {};
       big = cur.ongoing ? 'Hari ke-' + cur.dayN : 'Selesai';
       sub = cur.ongoing ? 'maksimal 60 hari' : 'catat haid berikutnya';
     } else {
-      const Lt = Math.max(cur.L, cur.cycleDay);
+      const Lt = cur.late ? Math.max(cur.L, cur.cycleDay) : cur.L; // ruas oranye hanya bila benar-benar terlambat
       const P = cur.ongoing ? Math.max(cur.cycleDay, Math.min(cur.st.avgPeriod, cur.L)) : cur.periodDays;
       const o1 = Math.max(P, cur.ovuDay - 2), o2 = Math.max(P, cur.ovuDay + 1);
       const raw = [
-        [0, P, 'var(--ph-mens)'], [P, o1, 'var(--ph-foli)'], [o1, o2, 'var(--ph-ovu)'], [o2, cur.L, 'var(--ph-lute)'], [cur.L, Lt, 'var(--late)'],
+        [0, P, 'var(--ph-mens)'], [P, o1, 'var(--ph-foli)'], [o1, o2, 'var(--ph-ovu)'], [o2, cur.L, 'var(--ph-lute)'], [cur.L, Lt, 'var(--late)'], // hari terlambat: warna sendiri, bukan luteal yang memanjang
       ];
       segs = raw.filter(([a, b]) => b > a).map(([a, b, c]) => ({ a: a / Lt, b: b / Lt, c }));
       marker = (Math.min(cur.cycleDay, Lt) - 0.5) / Lt;
@@ -308,7 +308,7 @@ window.Tamu = window.Tamu || {};
     }
     h += '<section class="card hero">' + ring(cur);
     if (cur.mode === 'cycle') {
-      h += '<div class="legend">' + ['menstruasi', 'folikular', 'ovulasi', 'luteal'].map((k) => '<span><i class="dot ph-' + phaseInfo(k).color + '"></i>' + phaseInfo(k).name + '</span>').join('') + '</div>';
+      h += '<div class="legend">' + ['menstruasi', 'folikular', 'ovulasi', 'luteal'].concat(cur.late ? ['terlambat'] : []).map((k) => '<span><i class="dot ph-' + phaseInfo(k).color + '"></i>' + phaseInfo(k).name + '</span>').join('') + '</div>';
     }
     h += mainAction() + '<button class="btn btn-ghost hero-edit" data-act="init-open">' + icon('edit') + 'Isi / ubah tanggal & jam haid</button>' + '</section>';
 
@@ -325,12 +325,24 @@ window.Tamu = window.Tamu || {};
         '<p class="ibadah">' + icon('moon') + '<span>' + esc(ph.ibadah) + '</span></p></section>';
 
       const st2 = cur.st;
-      const range = cur.lateDays > 0 ? 'Segera (terlambat ' + cur.lateDays + ' hari)'
-        : U.diffDays(cur.nextRange[1], cur.nextRange[0]) > 0 ? U.fmtShort(cur.nextRange[0]) + ' – ' + U.fmtShort(cur.nextRange[1]) : U.fmtShort(cur.nextStart);
+      // Angka di sini dibaca dari jadwal yang sama dengan lingkaran dan kalender (cur.plan)
+      const fmtR = (r) => U.fmtShort(r[0]) + ' – ' + U.fmtShort(r[1]);
+      const today0 = U.sod(now);
+      const dayTxt = cur.ongoing ? 'Hari ke-' + cur.cycleDay + ' · sedang haid'
+        : cur.late ? 'Hari ke-' + cur.cycleDay + ' · telat ' + cur.lateDays + ' hari'
+        : cur.daysToNext === 0 ? 'Hari ke-' + cur.cycleDay + ' · haid diperkirakan hari ini'
+        : 'Hari ke-' + cur.cycleDay + ' dari ±' + cur.L + ' hari';
+      const nextTxt = cur.late ? 'Bisa mulai besok, ' + U.fmtShort(cur.predNext)
+        : cur.daysToNext === 0 ? 'Hari ini, ' + U.fmtShort(cur.nextStart)
+        : U.fmtShort(cur.nextStart) + ' (' + cur.daysToNext + ' hari lagi)';
+      const nextSub = cur.late ? 'Perkiraan semula ' + U.fmtShort(cur.nextStart) : 'Kisaran ' + fmtR(cur.nextRange);
+      const inFertile = today0 >= U.sod(cur.fertile[0]) && today0 <= U.sod(cur.fertile[1]);
+      const ovuDiff = U.diffDays(cur.ovulation, today0);
       h += '<section class="card"><h3 class="card-t">Perkiraan</h3><div class="pred">' +
-        '<div><span class="k">Haid berikutnya</span><span class="v">' + range + '</span></div>' +
-        '<div><span class="k">Masa subur</span><span class="v">' + U.fmtShort(cur.fertile[0]) + ' – ' + U.fmtShort(cur.fertile[1]) + '</span></div>' +
-        '<div><span class="k">Perkiraan ovulasi</span><span class="v">' + U.fmtShort(cur.ovulation) + '</span></div>' +
+        '<div class="wide"><span class="k">Siklus sekarang</span><span class="v">' + dayTxt + '</span><small class="muted">Mulai ' + U.fmtShort(cur.cycleStart) + '</small></div>' +
+        '<div' + (cur.late ? ' class="pred-late"' : '') + '><span class="k">Haid berikutnya</span><span class="v">' + nextTxt + '</span><small class="muted">' + nextSub + '</small></div>' +
+        '<div><span class="k">' + (inFertile ? 'Masa subur (sekarang)' : 'Masa subur berikutnya') + '</span><span class="v">' + fmtR(cur.fertile) + '</span></div>' +
+        '<div><span class="k">Perkiraan ovulasi</span><span class="v">' + U.fmtShort(cur.ovulation) + '</span><small class="muted">' + (ovuDiff === 0 ? 'hari ini' : ovuDiff > 0 ? ovuDiff + ' hari lagi' : 'kemarin') + '</small></div>' +
         '<div><span class="k">Rata-rata siklus</span><span class="v">' + st2.avgCycle + ' hari</span></div>' +
         '<div><span class="k">Rata-rata haid</span><span class="v">' + st2.avgPeriod + ' hari</span></div>' +
         '<div><span class="k">Keteraturan</span><span class="v">' + (st2.regular === null ? 'belum cukup data' : st2.regular ? 'teratur' : 'tidak teratur') + '</span></div></div>' +
@@ -430,10 +442,10 @@ window.Tamu = window.Tamu || {};
       return '<div class="day-status ds-haid">' + icon('drop') + '<div><b>Perkiraan haid hari ke-' + mk.haidPred + '</b><small>Haid sedang berlangsung sejak ' + (og ? U.fmtDateTime(og.start) : '') + '. Diperkirakan selesai sekitar ' + U.fmtDate(U.addDays(U.sod(og ? og.start : now), Cycle.stats(d).avgPeriod - 1)) + ', sesuai kebiasaan lama haid ' + Cycle.stats(d).avgPeriod + ' hari.</small><small>Bila darah berhenti lebih cepat atau lebih lama, warnanya menyesuaikan setelah kamu menandai selesai.</small></div></div>';
     }
     if (mk.late && cur) {
-      return '<div class="day-status ds-late">' + icon('info') + '<div><b>Haid terlambat ' + mk.late + ' hari</b><small>Perkiraan semula ' + U.fmtDate(cur.nextStart) + '. Selisih beberapa hari masih wajar. <a href="#a/telat">Penyebab haid terlambat</a></small></div></div>';
+      return '<div class="day-status ds-late">' + icon('info') + '<div><b>' + (mk.late.n ? 'Haid terlambat ' + mk.late.n + ' hari' : 'Perkiraan awal haid') + '</b><small>' + (mk.late.n ? 'Perkiraan semula ' + U.fmtDate(cur.nextStart) + '. ' : 'Haid diperkirakan datang hari ini, tetapi belum tercatat. ') + 'Selisih beberapa hari masih wajar. <a href="#a/telat">Penyebab haid terlambat</a></small></div></div>';
     }
     if (mk.pred && cur) {
-      return '<div class="day-status ds-pred">' + icon('drop') + '<div><b>Perkiraan haid</b><small>' + (mk.pred === 'late' ? 'Perkiraan digeser karena haid belum datang. Bisa datang kapan saja mulai besok.' : 'Berdasarkan rata-rata siklus ' + cur.st.avgCycle + ' hari dan lama haid ' + cur.st.avgPeriod + ' hari.') + '</small></div></div>';
+      return '<div class="day-status ' + (mk.pred === 'late' ? 'ds-pred-late' : 'ds-pred') + '">' + icon('drop') + '<div><b>' + (mk.pred === 'late' ? 'Perkiraan haid (setelah telat)' : 'Perkiraan haid') + '</b><small>' + (mk.pred === 'late' ? 'Haid sudah telat ' + cur.lateDays + ' hari dari perkiraan semula (' + U.fmtShort(cur.nextStart) + '), jadi perkiraan digeser: bisa datang kapan saja mulai besok, selama sekitar ' + cur.st.avgPeriod + ' hari.' : 'Berdasarkan rata-rata siklus ' + cur.st.avgCycle + ' hari dan lama haid ' + cur.st.avgPeriod + ' hari.') + '</small></div></div>';
     }
     if (mk.ovu) return '<div class="day-status ds-fertile">' + icon('leaf') + '<div><b>Perkiraan ovulasi</b><small>Puncak masa subur (perkiraan, bukan alat kontrasepsi).</small></div></div>';
     if (mk.fertile) return '<div class="day-status ds-fertile">' + icon('leaf') + '<div><b>Masa subur</b><small>Perkiraan dari panjang siklusmu.</small></div></div>';
@@ -458,7 +470,7 @@ window.Tamu = window.Tamu || {};
       if (mk.nifas) cls.push('is-nifas'); else if (mk.haid) cls.push('is-haid');
       else if (mk.haidPred) cls.push('is-haid-pred');
       else if (mk.late) cls.push('is-late');
-      else if (mk.pred) cls.push('is-pred');
+      else if (mk.pred) cls.push(mk.pred === 'late' ? 'is-pred-late' : 'is-pred');
       else if (mk.fertile) cls.push('is-fertile');
       if (mk.ovu && !mk.haid) cls.push('is-ovu');
       if (key === todayKey) cls.push('is-today');
@@ -471,7 +483,7 @@ window.Tamu = window.Tamu || {};
 
     let h = '<section class="card cal"><div class="cal-head"><button class="icon-btn" data-act="month" data-dir="-1" aria-label="Bulan sebelumnya">' + icon('left') + '</button><div class="cal-title"><b>' + U.BULAN[first.getMonth()] + ' ' + first.getFullYear() + '</b><small>' + hijriLbl + '</small></div><button class="icon-btn" data-act="month" data-dir="1" aria-label="Bulan berikutnya">' + icon('right') + '</button></div>' +
       '<div class="cal-grid wk">' + ['Ahd', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'].map((x) => '<div>' + x + '</div>').join('') + '</div><div class="cal-grid">' + cells + '</div>' +
-      '<div class="legend cal-legend"><span><i class="sw sw-haid"></i>Haid</span><span><i class="sw sw-haid-pred"></i>Perkiraan sisa haid</span><span><i class="sw sw-pred"></i>Perkiraan haid</span><span><i class="sw sw-late"></i>Terlambat</span><span><i class="sw sw-fertile"></i>Masa subur</span><span><i class="sw sw-ovu"></i>Ovulasi</span><span><i class="sw sw-nifas"></i>Nifas</span></div>' +
+      '<div class="legend cal-legend"><span><i class="sw sw-haid"></i>Haid</span><span><i class="sw sw-haid-pred"></i>Perkiraan sisa haid</span><span><i class="sw sw-pred"></i>Perkiraan haid</span><span><i class="sw sw-late"></i>Terlambat</span><span><i class="sw sw-pred-late"></i>Perkiraan haid (setelah telat)</span><span><i class="sw sw-fertile"></i>Masa subur</span><span><i class="sw sw-ovu"></i>Ovulasi</span><span><i class="sw sw-nifas"></i>Nifas</span></div>' +
       (Cycle.current(d, now) ? '<div class="basis cal-basis">' + icon('info') + '<span>Prediksi: ' + esc(Cycle.basisText(Cycle.stats(d))) + '</span><button class="btn btn-ghost small" data-act="cycle-setup">Atur</button></div>' : '') +
       '<p class="muted small cal-src">Tanggal Hijriah: ' + esc(U.HIJRI_CALS[d.settings.hijriCal] || U.HIJRI_CALS.kemenag) + (d.settings.hijriAdj ? ' (koreksi ' + (d.settings.hijriAdj > 0 ? '+' : '') + d.settings.hijriAdj + ' hari)' : '') + ' · <a href="#settings">ubah</a></p></section>';
 
@@ -483,8 +495,8 @@ window.Tamu = window.Tamu || {};
     if (mk.haid) tags.push('<span class="tag tag-haid">Haid</span>');
     if (mk.nifas) tags.push('<span class="tag tag-nifas">Nifas</span>');
     if (mk.haidPred) tags.push('<span class="tag tag-haid">Perkiraan haid</span>');
-    if (mk.late) tags.push('<span class="tag tag-late">Terlambat</span>');
-    if (mk.pred && !mk.haid) tags.push('<span class="tag tag-line">Perkiraan haid</span>');
+    if (mk.late) tags.push('<span class="tag tag-late">' + (mk.late.n ? 'Telat ' + mk.late.n + ' hari' : 'Perkiraan semula') + '</span>');
+    if (mk.pred && !mk.haid) tags.push(mk.pred === 'late' ? '<span class="tag tag-late">Perkiraan haid (telat)</span>' : '<span class="tag tag-line">Perkiraan haid</span>');
     if (mk.fertile) tags.push('<span class="tag tag-green">Masa subur</span>');
     if (mk.ovu) tags.push('<span class="tag tag-green">Ovulasi</span>');
     h += '<section class="card"><div class="day-head"><div><b>' + U.fmtDate(sd, true) + '</b><div class="muted small">' + U.fmtHijri(new Date(sd.getFullYear(), sd.getMonth(), sd.getDate(), 12)) + '</div></div><div class="tags">' + tags.join('') + '</div></div>' +
@@ -1480,7 +1492,7 @@ window.Tamu = window.Tamu || {};
   }
 
   function boot() {
-    T.VERSION = '1.9.3';
+    T.VERSION = '1.10.0';
     lockZoom();
     Store.load();
     applyTheme();
