@@ -1,6 +1,6 @@
 /* Cloudflare Pages Function: POST /api/tanya
  * Dijalankan di origin yang sama dengan aplikasi, sehingga CSP 'self' cukup.
- * Atur rahasia ANTHROPIC_API_KEY di Pages → Settings → Environment variables (opsional: TAMU_AI_MODEL).
+ * Atur rahasia GROQ_API_KEY di Pages → Settings → Variables and Secrets (opsional: TAMU_AI_MODEL).
  */
 import { answer, TanyaError } from '../_lib/tanya-core.mjs';
 import kitab from '../../data/kitab.json';
@@ -33,7 +33,7 @@ export async function onRequestPost({ request, env }) {
   let body;
   try { body = await request.json(); } catch (e) { return json({ error: 'Permintaan tidak valid.' }, 400); }
   try {
-    const r = await answer({ apiKey: env.ANTHROPIC_API_KEY, model: env.TAMU_AI_MODEL, body, kitab });
+    const r = await answer({ apiKey: env.GROQ_API_KEY, model: env.TAMU_AI_MODEL, body, kitab });
     return json(r);
   } catch (e) {
     if (e instanceof TanyaError) return json({ error: e.message }, e.status);

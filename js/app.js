@@ -650,9 +650,9 @@ window.Tamu = window.Tamu || {};
   }
 
   /* ---------- Halaman: Tanya ---------- */
-  /* Tanya AI dinonaktifkan atas permintaan pemilik aplikasi: chat hanya memakai pustaka offline (tanpa Claude).
-   * Kode server lama disimpan di _nonaktif/tanya-ai/. Ubah ke true hanya bila fitur itu diaktifkan kembali. */
-  const AI_ENABLED = false;
+  /* Tanya AI: opsional, harus diaktifkan sendiri oleh pengguna (lihat sheetAIConsent).
+   * Server: functions/api/tanya.js → Groq. Ubah ke false untuk kembali ke pustaka offline saja. */
+  const AI_ENABLED = true;
   function aiOn() { return AI_ENABLED && !!D().settings.ai; }
   const mzBadge = (mz) => '<span class="mzb mz-' + mz + '">' + esc(T.Kitab.MZ[mz] ? T.Kitab.MZ[mz].name : mz) + '</span>';
 
@@ -784,9 +784,10 @@ window.Tamu = window.Tamu || {};
 
   function sheetAIConsent() {
     openSheet('<h2>Aktifkan Tanya AI?</h2>' +
-      '<ul class="promise"><li>' + icon('info') + '<span>Pertanyaan yang kamu ketik dikirim ke server Tamu, lalu diproses oleh layanan AI <b>Claude (Anthropic)</b> bersama kutipan kitab yang relevan.</span></li>' +
+      '<ul class="promise"><li>' + icon('info') + '<span>Pertanyaan yang kamu ketik dikirim ke server Tamu, lalu diproses oleh layanan AI <b>Groq</b> bersama kutipan kitab yang relevan.</span></li>' +
       '<li>' + icon('shield') + '<span><b>Catatan haid, tanggal, dan PIN kamu tidak ikut terkirim.</b> Hanya teks pertanyaan.</span></li>' +
       '<li>' + icon('info') + '<span>Jangan menulis nama atau data pribadi di pertanyaan.</span></li>' +
+      '<li>' + icon('info') + '<span>Memakai kuota gratis, jadi sesekali bisa penuh dan perlu dicoba lagi beberapa menit kemudian.</span></li>' +
       '<li>' + icon('info') + '<span>Butuh internet. AI bisa keliru, jadi jawabannya selalu disertai nomor kutipan kitab untuk dicek. Bukan fatwa.</span></li></ul>' +
       '<p class="muted small">Bisa dimatikan kapan saja dari halaman Tanya atau Pengaturan.</p>' +
       '<div class="sheet-actions"><button class="btn btn-ghost" data-act="close-sheet">Batal</button><button class="btn btn-primary" data-act="ai-enable">Aktifkan</button></div>', { noFocus: true });
@@ -820,7 +821,7 @@ window.Tamu = window.Tamu || {};
         : '<p class="muted">Aktifkan PIN agar orang lain yang memegang HP kamu tidak bisa membuka catatan. Data juga akan dienkripsi.</p><button class="btn btn-primary" data-act="pin-set"' + (Store.hasCrypto() ? '' : ' disabled') + '>' + icon('lock') + 'Aktifkan PIN</button>' + (Store.hasCrypto() ? '' : '<p class="err small">Enkripsi memerlukan HTTPS atau localhost.</p>')) +
       '</section>' +
 
-      (AI_ENABLED ? '<section class="card form"><h3 class="card-t">' + icon('learn') + 'Tanya AI</h3><div class="ai-toggle flat"><div><b>' + (s.ai ? 'Aktif' : 'Nonaktif') + '</b><small>' + (s.ai ? 'Pertanyaan di halaman Tanya dikirim ke server Tamu dan diproses Claude (Anthropic) bersama kutipan kitab. Catatan haid tidak ikut terkirim.' : 'Semua jawaban dari pustaka offline. Tidak ada pertanyaan yang dikirim ke mana pun.') + '</small></div><button class="switch" role="switch" aria-checked="' + !!s.ai + '" aria-label="Tanya AI" data-act="ai-toggle"><i></i></button></div></section>' : '') +
+      (AI_ENABLED ? '<section class="card form"><h3 class="card-t">' + icon('learn') + 'Tanya AI</h3><div class="ai-toggle flat"><div><b>' + (s.ai ? 'Aktif' : 'Nonaktif') + '</b><small>' + (s.ai ? 'Pertanyaan di halaman Tanya dikirim ke server Tamu dan diproses layanan AI Groq bersama kutipan kitab. Catatan haid tidak ikut terkirim.' : 'Semua jawaban dari pustaka offline. Tidak ada pertanyaan yang dikirim ke mana pun.') + '</small></div><button class="switch" role="switch" aria-checked="' + !!s.ai + '" aria-label="Tanya AI" data-act="ai-toggle"><i></i></button></div></section>' : '') +
 
       '<section class="card form"><h3 class="card-t">Datamu</h3><p class="muted">Data hanya ada di perangkat ini. Simpan cadangan untuk berjaga-jaga atau untuk pindah perangkat.</p>' +
       '<div class="row gap wrap"><button class="btn btn-soft" data-act="export">' + icon('down') + 'Ekspor cadangan</button><button class="btn btn-soft" data-act="import">' + icon('up') + 'Impor cadangan</button></div>' +
@@ -1492,7 +1493,7 @@ window.Tamu = window.Tamu || {};
   }
 
   function boot() {
-    T.VERSION = '1.10.0';
+    T.VERSION = '1.11.0';
     lockZoom();
     Store.load();
     applyTheme();

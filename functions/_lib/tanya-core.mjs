@@ -1,14 +1,15 @@
 /* Tamu — inti "Tanya AI": menyusun jawaban fikih HANYA dari kutipan kitab 4 mazhab yang tersimpan di aplikasi.
  * Dipakai oleh Cloudflare Pages Function (functions/api/tanya.js) dan server lokal (tools/serve.js).
+ * Layanan AI: Groq (API kompatibel OpenAI), dipanggil dengan fetch biasa — tanpa dependensi npm.
  *
  * Keamanan & privasi:
  * - Klien hanya mengirim pertanyaan + ID kutipan. Teks kitab diambil di server dari data/kitab.json,
  *   sehingga endpoint tidak bisa dipakai sebagai chatbot umum dengan teks sembarang.
- * - Pertanyaan tidak disimpan/dicatat oleh kode ini.
+ * - Pertanyaan tidak disimpan/dicatat oleh kode ini. Kunci API hanya ada di server (rahasia GROQ_API_KEY).
  */
-import Anthropic from '@anthropic-ai/sdk';
-
-export const DEFAULT_MODEL = 'claude-opus-5-5';
+const API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+// Dipilih dari uji coba: paling tepat membaca kutipan Arab di antara model Groq yang tersedia, dan cepat (±1,5 detik).
+export const DEFAULT_MODEL = 'qwen/qwen3.8-27b';
 const MAX_Q = 400;
 const MAX_IDS = 12;
 
@@ -20,6 +21,8 @@ Pengguna bertanya tentang haid, nifas, istihadhah, dan hukum ibadah yang terkait
 Sumber Anda hanya kutipan kitab di dalam <kutipan_kitab>. Kutipan itu dipilih dari bab haid kitab-kitab mazhab Hanafi, Maliki, Syafi'i, Hanbali, dan kitab perbandingan mazhab. Pengguna akan memeriksa jawaban Anda terhadap kutipan, jadi:
 - Setiap pernyataan hukum harus bersandar pada kutipan dan diberi penanda sumber [n] sesuai id kutipan, tepat setelah kalimatnya. Jangan membuat id yang tidak ada.
 - Jika kutipan tidak cukup untuk menjawab, atau suatu mazhab tidak terwakili, katakan terus terang (misalnya "Kutipan dari mazhab Maliki tentang ini tidak tersedia di pustaka Tamu"). Jangan mengisi dari ingatan, dan jangan mengarang nama kitab, halaman, atau hadits.
+- Jangan menarik kesimpulan perhitungan yang tidak tertulis di kutipan. Contoh: kutipan yang hanya menyebut "paling lama 15 hari, lebihnya istihadhah" TIDAK berarti "15 hari pertama haid, sisanya istihadhah". Dalam mazhab Syafi'i, bila darah melewati 15 hari, haid ditentukan lebih dulu dengan tamyiz (membedakan darah kuat dan lemah), lalu dengan kebiasaan haid sebelumnya ('adah). Sampaikan bahwa penentuannya perlu melihat sifat darah dan kebiasaan, dan sarankan bertanya kepada ustadzah.
+- Perhatikan pemilik setiap pendapat di dalam kutipan: kitab satu mazhab sering juga menyebut pendapat mazhab lain (misalnya kitab Hanafi menukil "Asy-Syafi'i berkata ..."). Jangan menisbatkan pendapat yang dinukil itu kepada mazhab penulis kitab.
 - Kutipan berbahasa Arab klasik. Pahami dengan cermat, termasuk pengecualian dan perbedaan riwayat di dalam mazhab, lalu jelaskan dengan bahasa Indonesia yang sederhana. Istilah fikih boleh disebut dengan penjelasan singkat, misalnya istizhar (menunggu tambahan beberapa hari).
 
 Bentuk jawaban (teks biasa; boleh **tebal** dan daftar berawalan "- "; tanpa judul #, tanpa tabel):
@@ -68,6 +71,27 @@ function buildPrompt(question, ids, kitab) {
   return '<kutipan_kitab>\n' + docs + '\n</kutipan_kitab>\n\n<pertanyaan>\n' + question + '\n</pertanyaan>';
 }
 
+async function callGroq(apiKey, payload) {
+  let res;
+  try {
+    res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + apiKey },
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(60000),
+    });
+  } catch (e) {
+    throw new TanyaError(504, 'Tidak bisa terhubung ke layanan AI.');
+  }
+  const j = await res.json().catch(() => ({}));
+  if (res.ok) return j;
+  if (res.status === 401 || res.status === 403) throw new TanyaError(503, 'Kunci API Tanya AI di server tidak valid.');
+  if (res.status === 429) throw new TanyaError(429, 'Tanya AI sedang ramai (batas kuota gratis). Coba lagi sebentar lagi.');
+  if (res.status === 413) throw new TanyaError(502, 'Kutipan terlalu panjang untuk layanan AI.');
+  if (res.status >= 400 && res.status < 500) throw new TanyaError(502, 'Permintaan ke layanan AI ditolak.');
+  throw new TanyaError(502, 'Layanan AI sedang bermasalah (' + res.status + ').');
+}
+
 /**
  * Susun jawaban. opts: { apiKey, model, body, kitab }.
  * Mengembalikan { text, model, ids, truncated }.
@@ -75,30 +99,20 @@ function buildPrompt(question, ids, kitab) {
 export async function answer({ apiKey, model, body, kitab }) {
   if (!apiKey) throw new TanyaError(503, 'Tanya AI belum diaktifkan di server ini.');
   const { question, ids } = validate(body, kitab);
-  const client = new Anthropic({ apiKey, maxRetries: 2, timeout: 120000 });
-  let response;
-  try {
-    response = await client.beta.messages.create({
-      model: model || DEFAULT_MODEL,
-      max_tokens: 16000,
-      betas: ['server-side-fallback-2026-07-01'],
-      fallbacks: 'default',
-      output_config: { effort: 'high' },
-      system: SYSTEM,
-      messages: [{ role: 'user', content: buildPrompt(question, ids, kitab) }],
-    });
-  } catch (e) {
-    if (e instanceof Anthropic.AuthenticationError) throw new TanyaError(503, 'Kunci API Tanya AI di server tidak valid.');
-    if (e instanceof Anthropic.RateLimitError) throw new TanyaError(429, 'Tanya AI sedang ramai. Coba lagi sebentar lagi.');
-    if (e instanceof Anthropic.BadRequestError) throw new TanyaError(502, 'Permintaan ke layanan AI ditolak.');
-    if (e instanceof Anthropic.APIConnectionError) throw new TanyaError(504, 'Tidak bisa terhubung ke layanan AI.');
-    if (e instanceof Anthropic.APIError) throw new TanyaError(502, 'Layanan AI sedang bermasalah (' + e.status + ').');
-    throw e;
-  }
-  if (response.stop_reason === 'refusal') {
-    throw new TanyaError(422, 'Maaf, pertanyaan ini tidak bisa dijawab oleh Tanya AI. Silakan tanyakan langsung kepada ustadzah.');
-  }
-  const text = response.content.filter((b) => b.type === 'text').map((b) => b.text).join('\n').trim();
+  const m = model || DEFAULT_MODEL;
+  const payload = {
+    model: m,
+    max_completion_tokens: 4096,
+    temperature: 0.2,
+    messages: [{ role: 'system', content: SYSTEM }, { role: 'user', content: buildPrompt(question, ids, kitab) }],
+  };
+  // Proses berpikir model tidak dikirim ke pengguna, hanya jawabannya.
+  // gpt-oss diberi waktu berpikir 'high': pada 'medium' ia salah membaca batas haid Hanafi (10 hari) dalam uji coba.
+  if (/gpt-oss/.test(m)) Object.assign(payload, { reasoning_effort: 'high', include_reasoning: false });
+  else if (/qwen3/.test(m)) payload.reasoning_format = 'hidden';
+  const j = await callGroq(apiKey, payload);
+  const c = j.choices && j.choices[0];
+  const text = String((c && c.message && c.message.content) || '').replace(/<think>[\s\S]*?<\/think>/g, '').trim();
   if (!text) throw new TanyaError(502, 'Layanan AI tidak memberikan jawaban.');
-  return { text, model: response.model, ids, truncated: response.stop_reason === 'max_tokens' };
+  return { text, model: j.model || m, ids, truncated: c.finish_reason === 'length' };
 }

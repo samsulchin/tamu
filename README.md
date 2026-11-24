@@ -61,11 +61,11 @@ Lima lokasi pulau terpencil yang punya jadwal Kemenag sendiri (Tambelan, Pekajan
 
 Nomor halaman mengikuti edisi digital sumbernya (umumnya al-Maktabah asy-Syamilah), belum tentu sama dengan kitab cetak.
 
-### Tanya AI (dinonaktifkan)
+### Tanya AI (opsional, Groq)
 
-Chat Tamu sepenuhnya memakai pustaka offline: tidak ada layanan AI dan tidak ada pertanyaan yang dikirim ke mana pun. Kode server Tanya AI (Claude) yang pernah dibuat disimpan di `_nonaktif/tanya-ai/` beserta cara mengaktifkannya kembali, dan tidak ikut berjalan.
+Secara bawaan chat Tamu memakai pustaka offline. Pengguna bisa menyalakan **Tanya AI** sendiri (ada layar persetujuan): pertanyaan, tanpa catatan haid, dikirim ke `functions/api/tanya.js` (Cloudflare Pages Function) lalu ke Groq, bersama nomor kutipan kitab yang relevan. AI hanya boleh menjawab dari kutipan itu dan wajib mencantumkan nomornya. Cara memasang dan mengganti model: [docs/tanya-ai.md](docs/tanya-ai.md).
 
-### Satu-satunya koneksi keluar: jadwal shalat Kemenag
+### Koneksi keluar lain: jadwal shalat Kemenag
 
 Situs `bimasislam.kemenag.go.id` tidak bisa dipanggil langsung dari aplikasi web: tidak ada header CORS, dilindungi Cloudflare Turnstile (captcha), dan sering lambat. Karena itu Tamu mengambil data Bimas Islam melalui **api.myquran.com** (CORS terbuka).
 
