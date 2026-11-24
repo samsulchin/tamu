@@ -1467,8 +1467,21 @@ window.Tamu = window.Tamu || {};
     }, wait);
   }
 
+  /** Aplikasi terpasang (standalone) terasa seperti aplikasi asli: cubit-zoom dan ketuk-dua-kali-zoom dimatikan.
+   *  Di browser biasa zoom tetap bisa dipakai, demi aksesibilitas. */
+  function lockZoom() {
+    if (!isStandalone()) return;
+    document.documentElement.classList.add('standalone');
+    const vp = document.querySelector('meta[name="viewport"]');
+    if (vp) vp.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover');
+    // Safari iOS mengabaikan user-scalable=no; cegah gestur cubit secara langsung
+    ['gesturestart', 'gesturechange'].forEach((ev) => document.addEventListener(ev, (e) => e.preventDefault(), { passive: false }));
+    document.addEventListener('touchmove', (e) => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
+  }
+
   function boot() {
-    T.VERSION = '1.9.2';
+    T.VERSION = '1.9.3';
+    lockZoom();
     Store.load();
     applyTheme();
     bind();
