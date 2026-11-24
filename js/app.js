@@ -1099,7 +1099,7 @@ window.Tamu = window.Tamu || {};
   /** Footer hak cipta: tahun mengikuti jam perangkat, jadi otomatis berganti setiap tahun baru. */
   function appFooter() {
     const year = new Date().getFullYear();
-    return '<footer class="app-footer">© ' + year + ' Tamu for Muslimah · Dilindungi undang-undang.</footer>';
+    return '<footer class="app-footer"><b>Tamu</b> – Teman Siklus Muslimah · © ' + year + '</footer>';
   }
 
   /* ---------- Render & navigasi ---------- */
@@ -1468,7 +1468,7 @@ window.Tamu = window.Tamu || {};
   }
 
   function boot() {
-    T.VERSION = '1.9.1';
+    T.VERSION = '1.9.2';
     Store.load();
     applyTheme();
     bind();
